@@ -1,52 +1,165 @@
 <template>
-	<view class="content">
-		<image class="logo" src="/static/logo.png"></image>
-		<view class="text-area">
-			<text class="title">{{title}}</text>
+	<view class="homeLayout">
+		<view class="banner">
+			<swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="white" autoplay="true" circular="true">
+				<swiper-item v-for="item in 3">
+					<image src="../../static/logo.png" mode="aspectFill"></image>
+				</swiper-item>
+			</swiper>
+		</view>
+		<view class="notice">
+			<view class="left">
+				<uni-icons type="sound-filled" size= 35rpx color='#28b389'></uni-icons>
+				<text class="text">公告</text>
+			</view>
+			<view class="center">
+				<swiper vertical autoplay interval="1500" duration="300" circular="true">
+					<swiper-item v-for="item in 4">文字内容</swiper-item>
+				</swiper>
+			</view>
+			<view class="right">
+				<uni-icons type="right" size="20" color='#333'></uni-icons>
+			</view>
+		</view>
+		<view class="select">
+			<common-title>
+				<template #name>每日推荐</template>
+				<template #custom>
+					<view class="date">
+						<uni-icons type="calendar" size="30" color="#28b389"></uni-icons>
+						<view>
+							<uni-dateformat :date="Date.now()" format="dd"></uni-dateformat>
+						</view>
+					</view>
+				</template>
+			</common-title>
+			<view class="content">
+				<scroll-view scroll-x="true">
+					<view class="box" v-for="item in 8">
+						<image src="../../static/logo.png" mode="aspectFill"></image>
+					</view>
+				</scroll-view>
+			</view>
+		</view>
+		<view class="theme">
+			<common-title>
+				<template #name>专题精选</template>
+				<template #custom>
+					<navigator url="" class="more">MORE+</navigator>
+				</template>
+			</common-title>
+			<view class="content">
+				<scroll-view scroll-x="true">
+					<view class="box" v-for="item in 8">
+						<image src="../../static/logo.png" mode="aspectFill"></image>
+					</view>
+				</scroll-view>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				title: 'Hello'
-			}
-		},
-		onLoad() {
-
-		},
-		methods: {
-
-		}
-	}
+	
 </script>
 
-<style>
-	.content {
+<style lang="scss" scoped>
+.homeLayout{
+	.banner{
+		width: 750rpx;
+		padding: 30rpx 0;
+		swiper{
+			width: 750rpx;
+			height: 340rpx;
+			swiper-item{
+				width: 100%;
+				height: 100%;
+				padding: 0 30rpx;
+				image{
+					width: 100%;
+					height: 100%;
+					border-radius: 10rpx;
+				}
+			}
+		}
+	}
+	.notice{
+		width: 690rpx;
+		height: 80rpx;
+		line-height: 80rpx;
+		background-color: #f9f9f9;
+		margin: 0 auto;
+		border-radius: 40rpx;
 		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
+		.left{
+			width: 140rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			.text{
+				color: #28b389;
+				font-weight: 600;
+				font-size: 28rpx;
+			}
+		}
+		.center{
+			flex:1;
+			swiper{
+				height: 100%;
+				&-item{
+					height: 100%;
+					font-size: 30rpx;
+					color: #666;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+			}
+		}
+		.right{
+			width: 70rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 	}
-
-	.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin-top: 200rpx;
-		margin-left: auto;
-		margin-right: auto;
-		margin-bottom: 50rpx;
+	.select{
+		padding-top: 50rpx;
+		.date{
+			color: #28b389;
+			display: flex;
+			align-items: center;
+			.text{
+				margin-left: 5rpx;
+			}
+		}
+		.content{
+			width: 720rpx;
+			margin-left: 30rpx;
+			margin-top: 30rpx;
+			scroll-view{
+				white-space: nowrap;
+				.box{
+					width: 200rpx;
+					height: 430rpx;
+					display: inline-block;
+					margin-right: 15rpx;
+					image{
+						width: 100%;
+						height: 100%;
+						border-radius: 10rpx;
+					}
+				}
+				.box:last-child{margin-right: 30rpx;}
+			}
+		}
 	}
-
-	.text-area {
-		display: flex;
-		justify-content: center;
+	.theme{
+		padding-top: 50rpx;
+		.more{
+			font-size: 32rpx;
+			color: #666;
+		}
 	}
-
-	.title {
-		font-size: 36rpx;
-		color: #8f8f94;
-	}
+}
 </style>
