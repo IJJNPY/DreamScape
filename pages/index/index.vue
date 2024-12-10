@@ -3,17 +3,19 @@
 		<view class="banner">
 			<swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="white" autoplay="true" circular="true">
 				<swiper-item v-for="item in 3">
-					<image src="../../static/logo.png" mode="aspectFill"></image>
+					<image src="../../common/images/banner1.jpg" mode="aspectFill"></image>
+					<image src="../../common/images/banner2.jpg" mode="aspectFill"></image>
+					<image src="../../common/images/banner3.jpg" mode="aspectFill"></image>
 				</swiper-item>
 			</swiper>
 		</view>
 		<view class="notice">
-			<view class="left">
+			<view class="left"> 
 				<uni-icons type="sound-filled" size= 35rpx color='#28b389'></uni-icons>
 				<text class="text">公告</text>
 			</view>
 			<view class="center">
-				<swiper vertical autoplay interval="1500" duration="300" circular="true">
+				<swiper vertical autoplay interval="1500" duration="500" circular="true">
 					<swiper-item v-for="item in 4">文字内容</swiper-item>
 				</swiper>
 			</view>
@@ -36,7 +38,7 @@
 			<view class="content">
 				<scroll-view scroll-x="true">
 					<view class="box" v-for="item in 8">
-						<image src="../../static/logo.png" mode="aspectFill"></image>
+						<image src="../../common/images/classify2.jpg" mode="aspectFill"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -49,11 +51,8 @@
 				</template>
 			</common-title>
 			<view class="content">
-				<scroll-view scroll-x="true">
-					<view class="box" v-for="item in 8">
-						<image src="../../static/logo.png" mode="aspectFill"></image>
-					</view>
-				</scroll-view>
+				<theme-item v-for="item in 8"></theme-item>
+				<theme-item :isMore="true"></theme-item>
 			</view>
 		</view>
 	</view>
@@ -159,6 +158,13 @@
 		.more{
 			font-size: 32rpx;
 			color: #666;
+		}
+		.content{
+			margin-top: 30rpx;
+			padding: 30rpx;
+			display: grid;
+			gap: 15rpx;
+			grid-template-columns: repeat(3,1fr);
 		}
 	}
 }
