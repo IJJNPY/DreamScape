@@ -26,8 +26,7 @@ function _sfc_render(_ctx, _cache) {
     d: common_assets._imports_2,
     e: common_vendor.p({
       type: "sound-filled",
-      size: "35rpx",
-      color: "#28b389"
+      size: "35rpx"
     }),
     f: common_vendor.f(4, (item, k0, i0) => {
       return {};
@@ -39,8 +38,7 @@ function _sfc_render(_ctx, _cache) {
     }),
     h: common_vendor.p({
       type: "calendar",
-      size: "30",
-      color: "#28b389"
+      size: "30"
     }),
     i: common_vendor.p({
       date: Date.now(),
@@ -49,7 +47,7 @@ function _sfc_render(_ctx, _cache) {
     j: common_vendor.f(8, (item, k0, i0) => {
       return {};
     }),
-    k: common_assets._imports_3,
+    k: common_assets._imports_0$1,
     l: common_vendor.f(8, (item, k0, i0) => {
       return {
         a: "1cf27b2a-6-" + i0

@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "分类",
+  "navigationStyle": "custom",
   "enablePullDownRefresh": false,
   "usingComponents": {
     "theme-item": "../../components/theme-item/theme-item"

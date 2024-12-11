@@ -4,6 +4,7 @@
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "推荐",
+				"navigationStyle": "custom",
 				"enablePullDownRefresh": false
 			}
 		},
@@ -12,6 +13,7 @@
 			"style" : 
 			{
 				"navigationBarTitleText" : "分类",
+				"navigationStyle": "custom",
 				"enablePullDownRefresh": false
 
 			}
@@ -21,7 +23,25 @@
 			"style" : 
 			{
 				"navigationBarTitleText" : "我的",
+				"navigationStyle": "custom",
 				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path" : "pages/classlist/classlist",
+			"style" : 
+			{
+				"navigationBarTitleText" : "分类列表",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path" : "pages/preview/preview",
+			"style" : 
+			{
+				"navigationBarTitleText" : "预览",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
 			}
 		}
 	],

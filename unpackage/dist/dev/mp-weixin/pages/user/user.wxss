@@ -23,6 +23,9 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
+.data-v-0f7520f0  .uni-icons {
+  color: #28B389 !important;
+}
 .userLayout .userInfo.data-v-0f7520f0 {
   display: flex;
   align-items: center;

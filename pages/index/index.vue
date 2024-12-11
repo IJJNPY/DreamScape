@@ -11,7 +11,7 @@
 		</view>
 		<view class="notice">
 			<view class="left"> 
-				<uni-icons type="sound-filled" size= 35rpx color='#28b389'></uni-icons>
+				<uni-icons type="sound-filled" size= 35rpx></uni-icons>
 				<text class="text">公告</text>
 			</view>
 			<view class="center">
@@ -28,7 +28,7 @@
 				<template #name>每日推荐</template>
 				<template #custom>
 					<view class="date">
-						<uni-icons type="calendar" size="30" color="#28b389"></uni-icons>
+						<uni-icons type="calendar" size="30"></uni-icons>
 						<view>
 							<uni-dateformat :date="Date.now()" format="dd"></uni-dateformat>
 						</view>
@@ -61,8 +61,13 @@
 <script>
 	
 </script>
-
+ 
 <style lang="scss" scoped>
+	:deep(){
+		.uni-icons{
+			color: $brand-theme-color !important;
+		}
+	}
 .homeLayout{
 	.banner{
 		width: 750rpx;
