@@ -6,7 +6,9 @@
 			</swiper-item>
 		</swiper>
 		<view class="mask" v-if="maskState">
-			<view class="goBack"></view>
+			<view class="goBack" :style="{top:getStatusBarHeight()+'px', marginLeft:getLeftIcon()+'px'}" @click="goBackPage">
+				<uni-icons type="back" color="#fff" size="20"></uni-icons>
+			</view>
 			<view class="count"> 3/9 </view>
 			<view class="time">
 				<uni-dateformat :date="new Date()" format="hh:mm"></uni-dateformat>
@@ -82,7 +84,7 @@
 			</view>
 		</uni-popup>
 		
-		<uni-popup ref="scorePopup">
+		<uni-popup ref="scorePopup" :is-mask-click="false">
 			<view class="scorePopup">
 				<view class="popHeader">
 					<view></view>
@@ -93,12 +95,12 @@
 				</view>
 				
 				<view class="content">
-					<uni-rate v-model="userScore"></uni-rate>
-					<text class="text">{{userScore}}</text>
+					<uni-rate v-model="userScore" allow-half="true"></uni-rate>
+					<text class="text">{{userScore}}分</text>
 				</view>
 				
 				<view class="footer">
-					<button type="default" size="mini">确认评分</button>
+					<button @click="submitScore" :disabled="!userScore" type="default" size="mini">确认评分</button>
 				</view>
 			</view>
 		</uni-popup>
@@ -107,7 +109,7 @@
 
 <script setup>
 import { ref } from 'vue';
-
+import { getStatusBarHeight, getTitleBarHeight,getNavBarHeight,getLeftIcon} from "@/utils/system.js"
 const maskState = ref(true);
 const infoPopup = ref(null);
 const scorePopup = ref(null);
@@ -132,9 +134,29 @@ const clickScoreClose = () =>{
 	scorePopup.value.close();
 }
 
+//确认评分
+const submitScore= () =>{
+	console.log("评分")
+}
+
 //遮罩层状态
 const maskChange = ()=>{
 	maskState.value = !maskState.value
+}
+
+const goBackPage = () => {
+	let pages = getCurrentPages();
+	let prepage = pages[pages.length - 2];
+
+	if(prepage===undefined){
+		uni.switchTab({
+			url:"/pages/index/index"
+		})
+	}else{
+		uni.navigateBack()
+	}
+	
+	
 }
 </script>
 
@@ -162,7 +184,18 @@ const maskChange = ()=>{
 			width: fit-content;
 		}
 		.goBack{
-			
+			width: 60rpx;
+			height: 60rpx;
+			background: rgba(0, 0, 0, 0.5);
+			left: 30rpx;
+			margin-left: 0;
+			border-radius: 50%;
+			top: 0;
+			backdrop-filter: blur(10rpx);
+			border: 1rpx solid rgba(255, 255, 255, 0.3);
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 		.count{
 			top: 10vh;
@@ -285,6 +318,32 @@ const maskChange = ()=>{
 					line-height: 1.6em;
 				}
 			}
+		}
+	}
+
+	.scorePopup{
+		background: #fff;
+		padding: 30rpx;
+		width: 70vw;
+		border-radius: 30rpx;
+		.content{
+			padding: 30rpx 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			.text{
+				color: #FFCA3E;
+				padding-left: 10rpx;
+				width: 80rpx;
+				line-height: 1em;
+				text-align: right;
+			}
+		}
+		.footer{
+			padding: 10rpx 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 	}
 }
