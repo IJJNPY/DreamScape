@@ -2,7 +2,7 @@
 	<view class="preview">
 		<swiper circular="true">
 			<swiper-item v-for="item in 5">
-				<image @click="maskChange" src="../../common/images/classify1.jpg" mode="aspectFill"></image>
+				<image @click="maskChange" src="../../static/logo.png" mode="aspectFill"></image>
 			</swiper-item>
 		</swiper>
 		<view class="mask" v-if="maskState">
@@ -19,7 +19,7 @@
 					<uni-icons type="info" size="23"></uni-icons>
 					<view class="text">信息</view>
 				</view>
-				<view class="box">
+				<view class="box" @click="clickScore">
 					<uni-icons type="star" size="23"></uni-icons>
 					<view class="text">5分</view>
 				</view>
@@ -30,20 +30,76 @@
 			</view>
 		</view>
 		
-		<uni-popup ref="infoPopup">
+		<uni-popup ref="infoPopup" type="bottom">
 			<view class="infoPopup">
 				<view class="popHeader">
 					<view></view>
 					<view class="title">壁纸信息</view>
-					<view class="close">
+					<view class="close" @click="clickInfoClose">
 						<uni-icons type="closeempty" size="18" color="#999"></uni-icons>
 					</view>
 				</view>
 				<scroll-view scroll-y="true">
 					<view class="content">
-						<view class="row" v-for="item in 10"></view>
+						<view class="row">
+							<view class="label">壁纸ID：</view>
+							<text selectable="true" class="value">165453416413135fad</text>
+						</view>
+						<view class="row">
+							<view class="label">分类：</view>
+							<text class="value">明星</text>
+						</view>
+						<view class="row">
+							<view class="label">发布者：</view>
+							<text class="value">大白菜</text>
+						</view>
+						<view class="row">
+							<view class="label">评分：</view>
+							<text class="value rateBox">
+								<uni-rate readonly="true" touchable="true" value="3.5" size="16"/>
+								<text class="score">5分</text>
+							</text>
+						</view>
+						<view class="row">
+							<view class="label">摘要：</view>
+							<text class="value">
+								内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字
+							</text>
+						</view>
+						<view class="row">
+							<view class="label">标签：</view>
+							<view class="value tabs">
+								<view class="tab" v-for="item in 2">
+									标签名
+								</view>
+							</view>
+						</view>
+						<view class="copyright">
+							内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字
+						</view>
 					</view>
 				</scroll-view>
+			</view>
+		</uni-popup>
+		
+		<uni-popup ref="scorePopup">
+			<view class="scorePopup">
+				<view class="popHeader">
+					<view></view>
+					<view class="title">壁纸评分</view>
+					<view class="close" @click="clickScoreClose">
+						<uni-icons type="closeempty" size="18" color="#999"></uni-icons>
+					</view>
+				</view>
+				
+				<view class="content">
+					<uni-rate v-model="userScore"></uni-rate>
+					<text class="text">{{userScore}}</text>
+				</view>
+				
+				<view class="footer">
+					<button type="default" size="mini">确认评分</button>
+				</view>
 			</view>
 		</uni-popup>
 	</view>
@@ -52,13 +108,31 @@
 <script setup>
 import { ref } from 'vue';
 
-const maskState = ref(true)
+const maskState = ref(true);
 const infoPopup = ref(null);
+const scorePopup = ref(null);
+const userScore = ref(0);
 
+//点击Info弹窗
 const clickInfo = () => {
 	infoPopup.value.open();
 }
+//点击关闭信息弹窗
+const clickInfoClose = () =>{
+	infoPopup.value.close();
+}
 
+//点击评分弹窗
+const clickScore = () =>{
+	scorePopup.value.open();
+}
+
+//点击关闭评分弹窗
+const clickScoreClose = () =>{
+	scorePopup.value.close();
+}
+
+//遮罩层状态
 const maskChange = ()=>{
 	maskState.value = !maskState.value
 }
@@ -131,6 +205,84 @@ const maskChange = ()=>{
 				.text{
 					font-size: 26rpx;
 					color: $text-font-color-2;
+				}
+			}
+		}
+	}
+
+	.popHeader{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		.title{
+			color: $text-font-color-2;
+			font-size: 26rpx;
+		}
+		.close{
+			padding: 6rpx;
+		}
+	}
+
+	.infoPopup{
+		background: #fff;
+		padding: 30rpx;
+		border-radius: 30rpx 30rpx 0 0;
+		overflow: hidden;
+		scroll-view{
+			max-height: 60vh;
+			
+			.content{
+				.row{
+					display: flex;
+					padding: 16rpx 0;
+					font-size: 32rpx;
+					line-height: 1.7em;
+					.label{
+						color: $text-font-color-3;
+						width: 140rpx;
+						text-align: right;
+						font-size: 30rpx;
+					}
+					.value{
+						flex: 1;
+						width: 0;
+					}
+					.rateBox{
+						display: flex;
+						align-items: center;
+						.score{
+							font-size: 26rpx;
+							color: $text-font-color-2;
+							padding: 20rpx;
+						}
+					}
+					.value.tabs{
+						display: flex;
+						flex-wrap: wrap;
+						.tab{
+							border: 1px solid $brand-theme-color;
+							color: $brand-theme-color;
+							font-size: 22rpx;
+							padding: 10rpx 20rpx;
+							border-radius: 40rpx;
+							list-height: 1em;
+							margin: 0 10rpx 10rpx 0;
+						}
+					}
+					.class{
+						color: $brand-theme-color;
+					}
+					
+					
+				}
+				.copyright {
+					font-size: 28rpx;
+					padding: 20rpx;
+					background: #F6F6F6;
+					color: #666;
+					border-radius: 10rpx;
+					margin: 20rpx 0;
+					line-height: 1.6em;
 				}
 			}
 		}

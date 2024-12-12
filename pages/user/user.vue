@@ -1,5 +1,5 @@
 <template>
-	<view class="userLayout">
+	<view class="userLayout pageBg">
 		<view class="userInfo">
 			<view class="avatar">
 				<image src="../../static/logo.png" mode="aspectFill"></image>
@@ -12,7 +12,7 @@
 			<view class="list">
 				<view class="row">
 					<view class="left">
-						<uni-icons type="download-filled" size="20"></uni-icons>
+						<uni-icons type="download-filled" size="20" color="$brand-theme-color"></uni-icons>
 						<view class="text">我的下载</view>
 					</view>
 					<view class="right">
@@ -22,7 +22,7 @@
 				</view>
 				<view class="row">
 					<view class="left">
-						<uni-icons type="star-filled" size="20"></uni-icons>
+						<uni-icons type="star-filled" size="20" color="$brand-theme-color"></uni-icons>
 						<view class="text">我的评分</view>
 					</view>
 					<view class="right">
@@ -32,7 +32,7 @@
 				</view>
 				<view class="row">
 					<view class="left">
-						<uni-icons type="chatboxes-filled" size="20"></uni-icons>
+						<uni-icons type="chatboxes-filled" size="20" color="$brand-theme-color"></uni-icons>
 						<view class="text">联系客服</view>
 					</view>
 					<view class="right">
@@ -52,7 +52,7 @@
 			<view class="list">
 				<view class="row">
 					<view class="left">
-						<uni-icons type="notification-filled" size="20"></uni-icons>
+						<uni-icons type="notification-filled" size="20" color="$brand-theme-color"></uni-icons>
 						<view class="text">订阅更新</view>
 					</view>
 					<view class="right">
@@ -62,7 +62,7 @@
 				</view>
 				<view class="row">
 					<view class="left">
-						<uni-icons type="flag-filled" size="20"></uni-icons>
+						<uni-icons type="flag-filled" size="20" color="$brand-theme-color"></uni-icons>
 						<view class="text">常见问题</view>
 					</view>
 					<view class="right">
@@ -82,14 +82,10 @@ const clickContact = () =>{
 		phoneNumber:"17824358614"
 	})
 }
+
 </script>
 
 <style lang="scss" scoped>
-	:deep(){
-		.uni-icons{
-			color: $brand-theme-color !important;
-		}
-	}
 .userLayout{
 	.userInfo{
 		display: flex;
@@ -132,6 +128,7 @@ const clickContact = () =>{
 				height: 100rpx;
 				border-bottom: 1rpx solid #eee;
 				position: relative;
+				background-color: #fff;
 				&:last-child{border-bottom: 0;}
 				.left{
 					display: flex;
