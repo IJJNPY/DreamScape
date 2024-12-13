@@ -3,10 +3,8 @@
 		<custom-nav-bar title="推荐"></custom-nav-bar>
 		<view class="banner">
 			<swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="white" autoplay="true" circular="true">
-				<swiper-item v-for="item in 3">
-					<image src="../../common/images/banner1.jpg" mode="aspectFill"></image>
-					<image src="../../common/images/banner2.jpg" mode="aspectFill"></image>
-					<image src="../../common/images/banner3.jpg" mode="aspectFill"></image>
+				<swiper-item v-for="item in bannerList" :key="item._id">
+					<image :src="item.picurl" mode="aspectFill"></image>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -17,7 +15,11 @@
 			</view>
 			<view class="center">
 				<swiper vertical autoplay interval="1500" duration="500" circular="true">
-					<swiper-item v-for="item in 4">文字内容</swiper-item>
+					<swiper-item v-for="item in noticeList" :key="item._id">
+						<navigator url="/pages/notice/detail">
+							{{item.title}}
+						</navigator>
+					</swiper-item>
 				</swiper>
 			</view>
 			<view class="right">
@@ -38,8 +40,8 @@
 			</common-title>
 			<view class="content">
 				<scroll-view scroll-x="true">
-					<view class="box" v-for="item in 8" @click="goPreview">
-						<image src="../../common/images/classify2.jpg" mode="aspectFill"></image>
+					<view class="box" v-for="item in randomList" :key="item._id" @click="goPreview">
+						<image :src="item.smallPicurl" mode="aspectFill"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -59,12 +61,38 @@
 	</view>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue'
+import { apiGetBanner, apiGetDayRandom, apiGetNotice } from "@/api/apis.js";
+
+const bannerList = ref([]);
+const randomList = ref([]);
+const noticeList = ref([]);
+
 const goPreview = () =>{
 	uni.navigateTo({
 		url:"/pages/preview/preview"
 	})
 }
+
+const getBanner = async()=>{
+	let res =await apiGetBanner();	
+	bannerList.value = res.data.data;
+}
+
+const getDayRandom = async()=>{
+	let res = await apiGetDayRandom();
+	randomList.value = res.data.data;
+}
+
+const getNotice = async()=>{
+	let res = await apiGetNotice();
+	noticeList.value = res.data.data;
+}
+
+getBanner();
+getDayRandom();
+getNotice();
 </script>
  
 <style lang="scss" scoped>
