@@ -47,7 +47,7 @@ defineProps({
 			padding: 0 30rpx;
 			align-items: center;
 			.title{
-				font-size: 22px;
+				font-size: 30rpx;
 				font-weight: 700;
 				color: $text-font-color-1;
 			}

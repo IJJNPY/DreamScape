@@ -9,7 +9,7 @@ export function request(config={}){
 	} = config
 	
 	url = BASE_URL+url;
-	header['access-key'] = ""
+	header['access-key'] = "cheerstojason"
 	return new Promise((resolve,reject)=>{
 		uni.request({
 			url,

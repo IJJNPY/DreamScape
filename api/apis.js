@@ -13,8 +13,23 @@ export function apiGetDayRandom(){
 	})
 }
 
-export function apiGetNotice(){
+export function apiGetNotice(data={}){
 	return request({
-		url:"/wallNewsList"
+		url:"/wallNewsList",
+		data
+	})
+}
+
+export function apiGetClassify(data){
+	return request({
+		url:"/classify",
+		data
+	})
+}
+
+export function apiGetClassList(data){
+	return request({
+		url:"/wallList",
+		data
 	})
 }

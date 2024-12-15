@@ -1,15 +1,15 @@
 <template>
 	<view class="preview">
-		<swiper circular="true">
-			<swiper-item v-for="item in 5">
-				<image @click="maskChange" src="../../static/logo.png" mode="aspectFill"></image>
+		<swiper circular="true" :current="currentIndex" @change="swiperChange">
+			<swiper-item v-for="item in classList" :key="item._id">
+				<image @click="maskChange" :src="item.picurl" mode="aspectFill"></image>
 			</swiper-item>
 		</swiper>
 		<view class="mask" v-if="maskState">
 			<view class="goBack" :style="{top:getStatusBarHeight()+'px', marginLeft:getLeftIcon()+'px'}" @click="goBackPage">
 				<uni-icons type="back" color="#fff" size="20"></uni-icons>
 			</view>
-			<view class="count"> 3/9 </view>
+			<view class="count"> {{currentIndex + 1}}/ {{classList.length}} </view>
 			<view class="time">
 				<uni-dateformat :date="new Date()" format="hh:mm"></uni-dateformat>
 			</view>
@@ -110,10 +110,33 @@
 <script setup>
 import { ref } from 'vue';
 import { getStatusBarHeight, getTitleBarHeight,getNavBarHeight,getLeftIcon} from "@/utils/system.js"
+import {onLoad,onUnload,onReachBottom,onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
 const maskState = ref(true);
 const infoPopup = ref(null);
 const scorePopup = ref(null);
 const userScore = ref(0);
+const classList = ref([]);
+const currentId = ref(null);
+const currentIndex = ref(null);
+
+const localClassList = uni.getStorageSync("localClassList") || [];
+classList.value = localClassList.map(item=>{
+	return{
+		...item,
+		picurl:item.smallPicurl.replace("_small.webp",".jpg")
+	}
+})
+
+onLoad((e)=>{
+	currentId.value = e.id;
+	currentIndex.value = classList.value.findIndex(item=>{
+		return item._id == currentId.value
+	})
+})
+
+const swiperChange = (e) =>{
+	currentIndex.value = e.detail.current;
+}
 
 //点击Info弹窗
 const clickInfo = () => {

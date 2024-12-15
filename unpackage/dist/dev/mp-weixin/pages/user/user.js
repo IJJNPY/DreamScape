@@ -14,10 +14,11 @@ const _sfc_main = {
   setup(__props) {
     return (_ctx, _cache) => {
       return {
-        a: common_assets._imports_0$2,
+        a: common_assets._imports_0,
         b: common_vendor.p({
           type: "download-filled",
-          size: "20"
+          size: "20",
+          color: "$brand-theme-color"
         }),
         c: common_vendor.p({
           type: "right",
@@ -25,7 +26,8 @@ const _sfc_main = {
         }),
         d: common_vendor.p({
           type: "star-filled",
-          size: "20"
+          size: "20",
+          color: "$brand-theme-color"
         }),
         e: common_vendor.p({
           type: "right",
@@ -33,7 +35,8 @@ const _sfc_main = {
         }),
         f: common_vendor.p({
           type: "chatboxes-filled",
-          size: "20"
+          size: "20",
+          color: "$brand-theme-color"
         }),
         g: common_vendor.p({
           type: "right",
@@ -41,7 +44,8 @@ const _sfc_main = {
         }),
         h: common_vendor.p({
           type: "notification-filled",
-          size: "20"
+          size: "20",
+          color: "$brand-theme-color"
         }),
         i: common_vendor.p({
           type: "right",
@@ -49,7 +53,8 @@ const _sfc_main = {
         }),
         j: common_vendor.p({
           type: "flag-filled",
-          size: "20"
+          size: "20",
+          color: "$brand-theme-color"
         }),
         k: common_vendor.p({
           type: "right",
