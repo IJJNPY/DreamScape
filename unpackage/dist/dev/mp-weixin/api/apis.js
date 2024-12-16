@@ -10,11 +10,26 @@ function apiGetDayRandom() {
     url: "/randomWall"
   });
 }
-function apiGetNotice() {
+function apiGetNotice(data = {}) {
   return utils_request.request({
-    url: "/wallNewsList"
+    url: "/wallNewsList",
+    data
+  });
+}
+function apiGetClassify(data) {
+  return utils_request.request({
+    url: "/classify",
+    data
+  });
+}
+function apiGetClassList(data) {
+  return utils_request.request({
+    url: "/wallList",
+    data
   });
 }
 exports.apiGetBanner = apiGetBanner;
+exports.apiGetClassList = apiGetClassList;
+exports.apiGetClassify = apiGetClassify;
 exports.apiGetDayRandom = apiGetDayRandom;
 exports.apiGetNotice = apiGetNotice;

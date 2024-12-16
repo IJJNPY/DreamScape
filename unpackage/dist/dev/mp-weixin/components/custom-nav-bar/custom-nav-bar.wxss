@@ -37,7 +37,7 @@
   align-items: center;
 }
 .layout .navbar .titleBar .title.data-v-412fc155 {
-  font-size: 22px;
+  font-size: 30rpx;
   font-weight: 700;
   color: #000;
 }

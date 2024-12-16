@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const common_assets = require("../../common/assets.js");
 const utils_system = require("../../utils/system.js");
 if (!Array) {
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
@@ -23,6 +22,36 @@ const _sfc_main = {
     const infoPopup = common_vendor.ref(null);
     const scorePopup = common_vendor.ref(null);
     const userScore = common_vendor.ref(0);
+    const classList = common_vendor.ref([]);
+    const currentId = common_vendor.ref(null);
+    const currentIndex = common_vendor.ref(null);
+    const readImgs = common_vendor.ref([]);
+    const localClassList = common_vendor.index.getStorageSync("localClassList") || [];
+    classList.value = localClassList.map((item) => {
+      return {
+        ...item,
+        picurl: item.smallPicurl.replace("_small.webp", ".jpg")
+      };
+    });
+    common_vendor.onLoad((e) => {
+      currentId.value = e.id;
+      currentIndex.value = classList.value.findIndex((item) => {
+        return item._id == currentId.value;
+      });
+      readImgsFun();
+    });
+    function readImgsFun() {
+      readImgs.value.push(
+        currentIndex.value <= 0 ? classList.value.length - 1 : currentIndex.value - 1,
+        currentIndex.value,
+        currentIndex.value >= classList.value.length - 1 ? 0 : currentIndex.value + 1
+      );
+      readImgs.value = [...new Set(readImgs.value)];
+    }
+    const swiperChange = (e) => {
+      currentIndex.value = e.detail.current;
+      readImgsFun();
+    };
     const clickInfo = () => {
       infoPopup.value.open();
     };
@@ -54,11 +83,18 @@ const _sfc_main = {
     };
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.f(5, (item, k0, i0) => {
-          return {};
+        a: common_vendor.f(classList.value, (item, index, i0) => {
+          return common_vendor.e({
+            a: readImgs.value.includes(index)
+          }, readImgs.value.includes(index) ? {
+            b: common_vendor.o(maskChange, item._id),
+            c: item.picurl
+          } : {}, {
+            d: item._id
+          });
         }),
-        b: common_vendor.o(maskChange),
-        c: common_assets._imports_0,
+        b: currentIndex.value,
+        c: common_vendor.o(swiperChange),
         d: maskState.value
       }, maskState.value ? {
         e: common_vendor.p({
@@ -69,68 +105,70 @@ const _sfc_main = {
         f: common_vendor.unref(utils_system.getStatusBarHeight)() + "px",
         g: common_vendor.unref(utils_system.getLeftIcon)() + "px",
         h: common_vendor.o(goBackPage),
-        i: common_vendor.p({
+        i: common_vendor.t(currentIndex.value + 1),
+        j: common_vendor.t(classList.value.length),
+        k: common_vendor.p({
           date: /* @__PURE__ */ new Date(),
           format: "hh:mm"
         }),
-        j: common_vendor.p({
+        l: common_vendor.p({
           date: /* @__PURE__ */ new Date(),
           format: "MM月dd日"
         }),
-        k: common_vendor.p({
+        m: common_vendor.p({
           type: "info",
           size: "23"
         }),
-        l: common_vendor.o(clickInfo),
-        m: common_vendor.p({
+        n: common_vendor.o(clickInfo),
+        o: common_vendor.p({
           type: "star",
           size: "23"
         }),
-        n: common_vendor.o(clickScore),
-        o: common_vendor.p({
+        p: common_vendor.o(clickScore),
+        q: common_vendor.p({
           type: "download",
           size: "23"
         })
       } : {}, {
-        p: common_vendor.p({
+        r: common_vendor.p({
           type: "closeempty",
           size: "18",
           color: "#999"
         }),
-        q: common_vendor.o(clickInfoClose),
-        r: common_vendor.p({
+        s: common_vendor.o(clickInfoClose),
+        t: common_vendor.p({
           readonly: "true",
           touchable: "true",
           value: "3.5",
           size: "16"
         }),
-        s: common_vendor.f(2, (item, k0, i0) => {
+        v: common_vendor.f(2, (item, k0, i0) => {
           return {};
         }),
-        t: common_vendor.sr(infoPopup, "2dad6c07-6", {
+        w: common_vendor.sr(infoPopup, "2dad6c07-6", {
           "k": "infoPopup"
         }),
-        v: common_vendor.p({
+        x: common_vendor.p({
           type: "bottom"
         }),
-        w: common_vendor.p({
+        y: common_vendor.p({
           type: "closeempty",
           size: "18",
           color: "#999"
         }),
-        x: common_vendor.o(clickScoreClose),
-        y: common_vendor.o(($event) => userScore.value = $event),
-        z: common_vendor.p({
+        z: common_vendor.o(clickScoreClose),
+        A: common_vendor.o(($event) => userScore.value = $event),
+        B: common_vendor.p({
           ["allow-half"]: "true",
           modelValue: userScore.value
         }),
-        A: common_vendor.t(userScore.value),
-        B: common_vendor.o(submitScore),
-        C: !userScore.value,
-        D: common_vendor.sr(scorePopup, "2dad6c07-9", {
+        C: common_vendor.t(userScore.value),
+        D: common_vendor.o(submitScore),
+        E: !userScore.value,
+        F: common_vendor.sr(scorePopup, "2dad6c07-9", {
           "k": "scorePopup"
         }),
-        E: common_vendor.p({
+        G: common_vendor.p({
           ["is-mask-click"]: false
         })
       });
@@ -138,4 +176,5 @@ const _sfc_main = {
   }
 };
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-2dad6c07"]]);
+_sfc_main.__runtimeHooks = 6;
 wx.createPage(MiniProgramPage);

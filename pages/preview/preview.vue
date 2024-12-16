@@ -1,8 +1,8 @@
 <template>
 	<view class="preview">
 		<swiper circular="true" :current="currentIndex" @change="swiperChange">
-			<swiper-item v-for="item in classList" :key="item._id">
-				<image @click="maskChange" :src="item.picurl" mode="aspectFill"></image>
+			<swiper-item v-for="(item,index) in classList" :key="item._id">
+				<image v-if="readImgs.includes(index)" @click="maskChange" :src="item.picurl" mode="aspectFill"></image>
 			</swiper-item>
 		</swiper>
 		<view class="mask" v-if="maskState">
@@ -118,6 +118,7 @@ const userScore = ref(0);
 const classList = ref([]);
 const currentId = ref(null);
 const currentIndex = ref(null);
+const readImgs = ref([]);
 
 const localClassList = uni.getStorageSync("localClassList") || [];
 classList.value = localClassList.map(item=>{
@@ -132,10 +133,21 @@ onLoad((e)=>{
 	currentIndex.value = classList.value.findIndex(item=>{
 		return item._id == currentId.value
 	})
+	readImgsFun()
 })
+
+function readImgsFun(){
+	readImgs.value.push(
+	currentIndex.value<=0?classList.value.length-1 : currentIndex.value-1,
+	currentIndex.value,
+	currentIndex.value>=classList.value.length-1? 0: currentIndex.value+1
+	)
+	readImgs.value = [...new Set(readImgs.value)];
+}
 
 const swiperChange = (e) =>{
 	currentIndex.value = e.detail.current;
+	readImgsFun()
 }
 
 //点击Info弹窗
