@@ -11,6 +11,22 @@
 <script setup>
 import { ref } from 'vue';
 import { apiGetClassify } from "@/api/apis.js"
+import { onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
+
+//分享到好友
+onShareAppMessage((e)=>{
+	return {
+		title:"分享测试标题",
+		path:"/pages/index/index"
+	}
+})
+
+//分享到朋友圈
+onShareTimeline(()=>{
+	return{
+		title:"分享朋友圈---",
+	}
+})
 
 const classifyList = ref([]);
 

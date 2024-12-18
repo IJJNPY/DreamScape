@@ -64,15 +64,18 @@
 <script setup>
 import { ref } from 'vue'
 import { apiGetBanner, apiGetDayRandom, apiGetNotice, apiGetClassify } from "@/api/apis.js";
+import { onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
 
 const bannerList = ref([]);
 const randomList = ref([]);
 const noticeList = ref([]);
 const classifyList = ref([]);
 
-const goPreview = () =>{
+//跳转到预览页面
+const goPreview = (id)=>{
+	uni.setStorageSync("storgClassList",randomList.value);
 	uni.navigateTo({
-		url:"/pages/preview/preview"
+		url:"/pages/preview/preview?id="+id
 	})
 }
 
@@ -97,6 +100,21 @@ const getClassify = async()=>{
 	});
 	classifyList.value = res.data.data;
 }
+
+//分享到好友
+onShareAppMessage((e)=>{
+	return {
+		title:"分享测试标题",
+		path:"/pages/index/index"
+	}
+})
+
+//分享到朋友圈
+onShareTimeline(()=>{
+	return{
+		title:"分享朋友圈---",
+	}
+})
 
 getBanner();
 getDayRandom();

@@ -20,7 +20,7 @@
 import { ref } from "vue";
 import {onLoad,onUnload,onReachBottom,onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
 import { apiGetClassList } from "../../api/apis";
-
+import { gotoHome } from "../../utils/common";
 
 const classList = ref([]);
 const noMoreData = ref(false);
@@ -28,9 +28,29 @@ const queryParams = {
 	pageNum:1,
 	pageSize:12
 };
+let pageName;
+
+//分享到好友
+onShareAppMessage((e)=>{
+	return {
+		title:"分享测试标题-"+pageName,
+		path:"/pages/classlist/classlist?id="+queryParams.classid+"&name="+pageName
+	}
+})
+
+//分享到朋友圈
+onShareTimeline(()=>{
+	return{
+		title:"分享朋友圈---",
+		query:"id="+queryParams.classid+"&name="+pageName
+	}
+})
+
 onLoad((e)=>{
 	let {id=null,name=null} = e;
+	if(!id) gotoHome();
 	queryParams.classid = id;
+	pageName = name;
 	//修改导航栏标题
 	uni.setNavigationBarTitle({
 		title:name

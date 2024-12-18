@@ -111,7 +111,7 @@
 import { ref } from 'vue';
 import { getStatusBarHeight, getTitleBarHeight,getNavBarHeight,getLeftIcon} from "@/utils/system.js"
 import {onLoad,onUnload,onReachBottom,onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
-import { apiGetSetupScore } from '../../api/apis';
+import { apiDetailWall, apiGetSetupScore, apiWriteDownload } from '../../api/apis';
 const maskState = ref(true);
 const infoPopup = ref(null);
 const scorePopup = ref(null);
@@ -119,11 +119,29 @@ const userScore = ref(0);
 const classList = ref([]);
 const currentId = ref(null);
 const currentIndex = ref(null);
-const currentInfo = ref(null);
+const currentInfo = ref({});
 const isScore = ref(false);
 const readImgs = ref([]);
 
 const localClassList = uni.getStorageSync("localClassList") || [];
+
+//分享给好友
+onShareAppMessage((e)=>{
+	return {
+		title:"咸虾米壁纸",
+		path:"/pages/preview/preview?id="+currentId.value+"&type=share"
+	}
+})
+
+
+//分享朋友圈
+onShareTimeline(()=>{
+	return {
+		title:"咸虾米壁纸",
+		query:"id="+currentId.value+"&type=share"
+	}
+})
+
 classList.value = localClassList.map(item=>{
 	return{
 		...item,
@@ -133,6 +151,15 @@ classList.value = localClassList.map(item=>{
 
 onLoad((e)=>{
 	currentId.value = e.id;
+	if(e.type == 'share'){
+		let res = await apiDetailWall({id:currentId.value})
+		classList.value = res.data.map(item=>{
+			return{
+				...item,
+				picurl:item.smallPicurl.replace("_small.webp",".jpg")
+			}
+		})
+	}
 	currentIndex.value = classList.value.findIndex(item=>{
 		return item._id == currentId.value
 	})
@@ -140,7 +167,7 @@ onLoad((e)=>{
 	currentInfo.value = classList.value[currentIndex.value];
 })
 
-const clickDownload = ()=>{
+const clickDownload = async ()=>{
 	// #ifdef H5
 	uni.showModal({
 		content:"请长按保存壁纸",
@@ -149,53 +176,71 @@ const clickDownload = ()=>{
 	// #endif
 	
 	// #ifndef H5
-	uni.getImageInfo({
-		src:currentInfo.value.picurl,
-		success: (res)=>{
-			uni.saveImageToPhotosAlbum({
-				filePath:res.path,
-				success: (res)=>{
-					console.log(res)
-				},
-				fail: err=>{
-					if(err.errMsg == 'saveImageToPhotosAlbum:fail cancel'){
+	try {
+		uni.showLoading({
+			title:"下载中...",
+			mask:true
+		})
+		let {classid,_id:wallId} = currentInfo.value;
+		let res = await apiWriteDownload({
+			classid,
+			wallId
+		})
+		if(res.errCode != 0) throw res;
+		uni.getImageInfo({
+			src:currentInfo.value.picurl,
+			success: (res)=>{
+				uni.saveImageToPhotosAlbum({
+					filePath:res.path,
+					success: (res) => {
 						uni.showToast({
-							title:"保存失败，请点击重新下载",
-							icon:"none"
+							title: "保存成功，请到相册查看",
+							icon: "none"
 						})
-					}
-					uni.showModal({
-						title:"提示",
-						content:"需要授权保存相册",
-						success: (res) => {
-							if(res.confirm){
-								uni.openSetting({
-									success: (setting) => {
-										console.log(setting);
-										if(setting.authSetting['scope.writePhotosAlbum']){
-											uni.showToast({
-												title:"获取授权成功",
-												icon:"none"
-											})
-										}else{
-											uni.showToast({
-												title:"获取授权失败",
-												icon:"none"
-											})
-										}
-									}
-								})
-							}
+					},
+					fail: err=>{
+						if(err.errMsg == 'saveImageToPhotosAlbum:fail cancel'){
+							uni.showToast({
+								title:"保存失败，请点击重新下载",
+								icon:"none"
+							})
 						}
-					})
-				},
-				complete: () => {
-					uni.hideLoading();
-				}
-			})
-		}
-	})
-	
+						uni.showModal({
+							title:"提示",
+							content:"需要授权保存相册",
+							success: (res) => {
+								if(res.confirm){
+									uni.openSetting({
+										success: (setting) => {
+											console.log(setting);
+											if(setting.authSetting['scope.writePhotosAlbum']){
+												uni.showToast({
+													title:"获取授权成功",
+													icon:"none"
+												})
+											}else{
+												uni.showToast({
+													title:"获取授权失败",
+													icon:"none"
+												})
+											}
+										}
+									})
+								}
+							}
+						})
+					},
+					complete: () => {
+						uni.hideLoading();
+					}
+				})
+			}
+		})
+	} catch (err) {
+		//TODO handle the exception
+		console.log(err);
+		uni.hideLoading();
+	}
 	// #endif
 }
 
@@ -270,19 +315,24 @@ const maskChange = ()=>{
 }
 
 const goBackPage = () => {
-	let pages = getCurrentPages();
-	let prepage = pages[pages.length - 2];
+	// let pages = getCurrentPages();
+	// let prepage = pages[pages.length - 2];
 
-	if(prepage===undefined){
-		uni.switchTab({
-			url:"/pages/index/index"
-		})
-	}else{
-		uni.navigateBack()
-	}
-	
-	
+	uni.navigateBack({
+		success: () => {
+			
+		},
+		fail: () => {
+			uni.reLaunch({
+				url:"/pages/index/index"
+			})
+		}
+	})
 }
+
+onUnload(()=>{
+	uni.removeStorageSync("localClassList")
+})
 
 </script>
 
