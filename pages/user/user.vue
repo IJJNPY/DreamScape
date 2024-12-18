@@ -1,35 +1,40 @@
 <template>
 	<view class="userLayout pageBg">
-		<view class="userInfo">
+		<view :style="{height:getNavBarHeight()+'px'}"></view>
+		<view class="userInfo" v-if="userInfo">
 			<view class="avatar">
 				<image src="../../static/logo.png" mode="aspectFill"></image>
 			</view>
-			<view class="ip">88.88.88.88</view>
-			<view class="address">来自于: 山东</view>
+			<view class="ip">{{userInfo.IP}}</view>
+			<view class="address">来自于: 
+			{{userInfo.address.city || userInfo.address.province || userInfo.address.address}}
+			</view>
 		</view>
 
 		<view class="section">
 			<view class="list">
-				<view class="row">
+				<navigator url="/pages/classlist/classlist?name=我的下载&type=download" class="row">
 					<view class="left">
 						<uni-icons type="download-filled" size="20" color="$brand-theme-color"></uni-icons>
 						<view class="text">我的下载</view>
 					</view>
 					<view class="right">
-						<view class="text">33</view>
+						<view class="text">{{userInfo.downloadSize}}</view>
 						<uni-icons type="right" size=15></uni-icons>
 					</view>
-				</view>
-				<view class="row">
+				</navigator>
+				<navigator 
+				url="/pages/classlist/classlist?name=我的评分&type=score"
+				class="row">
 					<view class="left">
 						<uni-icons type="star-filled" size="20" color="$brand-theme-color"></uni-icons>
 						<view class="text">我的评分</view>
 					</view>
 					<view class="right">
-						<view class="text">33</view>
+						<view class="text">{{userInfo.scoreSize}}</view>
 						<uni-icons type="right" size=15></uni-icons>
 					</view>
-				</view>
+				</navigator>
 				<view class="row">
 					<view class="left">
 						<uni-icons type="chatboxes-filled" size="20" color="$brand-theme-color"></uni-icons>
@@ -73,13 +78,29 @@
 			</view>
 		</view>
 	</view>
+	
+	<view class="loadingLayout" v-else>
+		<view :style="{height:getNavBarHeight()+'px'}"></view>
+		<uni-load-more :status="more"></uni-load-more>
+	</view>
 </template>
 
 <script setup>
+import { getNavBarHeight } from '../../utils/system';
+import { apiuserInfo } from '@/api/apis.js';
+
+const userInfo = ref({})
 
 const clickContact = () =>{
 	uni.makePhoneCall({
 		phoneNumber:"17824358614"
+	})
+}
+
+const getuserInfo = () => {
+	apiuserInfo().then(res=>{
+		console.log(res);
+		userInfo.value = res.data;
 	})
 }
 
