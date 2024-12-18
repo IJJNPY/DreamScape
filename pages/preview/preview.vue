@@ -23,16 +23,16 @@
 				</view>
 				<view class="box" @click="clickScore">
 					<uni-icons type="star" size="23"></uni-icons>
-					<view class="text">5分</view>
+					<view class="text">{{currentInfo.score}}分</view>
 				</view>
-				<view class="box">
+				<view class="box" @click="clickDownload">
 					<uni-icons type="download" size="23"></uni-icons>
 					<view class="text">下载</view>
 				</view>
 			</view>
 		</view>
 		
-		<uni-popup ref="infoPopup" type="bottom">
+		<uni-popup ref="infoPopup" type="bottom" :safe-area='false'>
 			<view class="infoPopup">
 				<view class="popHeader">
 					<view></view>
@@ -58,7 +58,7 @@
 						<view class="row">
 							<view class="label">评分：</view>
 							<text class="value rateBox">
-								<uni-rate readonly="true" touchable="true" value="3.5" size="16"/>
+								<uni-rate readonly="true" touchable="true" value="currentInfo.score" size="16"/>
 								<text class="score">{{currentInfo.score}}分</text>
 							</text>
 						</view>
@@ -88,19 +88,19 @@
 			<view class="scorePopup">
 				<view class="popHeader">
 					<view></view>
-					<view class="title">壁纸评分</view>
+					<view class="title">{{isScore?'评分过了~':'壁纸评分'}}</view>
 					<view class="close" @click="clickScoreClose">
 						<uni-icons type="closeempty" size="18" color="#999"></uni-icons>
 					</view>
 				</view>
 				
 				<view class="content">
-					<uni-rate v-model="userScore" allow-half="true"></uni-rate>
+					<uni-rate v-model="userScore" allow-half="true" :disabled="!userScore || isScore"></uni-rate>
 					<text class="text">{{userScore}}分</text>
 				</view>
 				
 				<view class="footer">
-					<button @click="submitScore" :disabled="!userScore" type="default" size="mini">确认评分</button>
+					<button @click="submitScore" :disabled="!userScore || isScore" type="default" size="mini">确认评分</button>
 				</view>
 			</view>
 		</uni-popup>
@@ -111,6 +111,7 @@
 import { ref } from 'vue';
 import { getStatusBarHeight, getTitleBarHeight,getNavBarHeight,getLeftIcon} from "@/utils/system.js"
 import {onLoad,onUnload,onReachBottom,onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
+import { apiGetSetupScore } from '../../api/apis';
 const maskState = ref(true);
 const infoPopup = ref(null);
 const scorePopup = ref(null);
@@ -119,6 +120,7 @@ const classList = ref([]);
 const currentId = ref(null);
 const currentIndex = ref(null);
 const currentInfo = ref(null);
+const isScore = ref(false);
 const readImgs = ref([]);
 
 const localClassList = uni.getStorageSync("localClassList") || [];
@@ -137,6 +139,65 @@ onLoad((e)=>{
 	readImgsFun()
 	currentInfo.value = classList.value[currentIndex.value];
 })
+
+const clickDownload = ()=>{
+	// #ifdef H5
+	uni.showModal({
+		content:"请长按保存壁纸",
+		showCancel:false,
+	})
+	// #endif
+	
+	// #ifndef H5
+	uni.getImageInfo({
+		src:currentInfo.value.picurl,
+		success: (res)=>{
+			uni.saveImageToPhotosAlbum({
+				filePath:res.path,
+				success: (res)=>{
+					console.log(res)
+				},
+				fail: err=>{
+					if(err.errMsg == 'saveImageToPhotosAlbum:fail cancel'){
+						uni.showToast({
+							title:"保存失败，请点击重新下载",
+							icon:"none"
+						})
+					}
+					uni.showModal({
+						title:"提示",
+						content:"需要授权保存相册",
+						success: (res) => {
+							if(res.confirm){
+								uni.openSetting({
+									success: (setting) => {
+										console.log(setting);
+										if(setting.authSetting['scope.writePhotosAlbum']){
+											uni.showToast({
+												title:"获取授权成功",
+												icon:"none"
+											})
+										}else{
+											uni.showToast({
+												title:"获取授权失败",
+												icon:"none"
+											})
+										}
+									}
+								})
+							}
+						}
+					})
+				},
+				complete: () => {
+					uni.hideLoading();
+				}
+			})
+		}
+	})
+	
+	// #endif
+}
 
 function readImgsFun(){
 	readImgs.value.push(
@@ -165,17 +226,42 @@ const clickInfoClose = () =>{
 
 //点击评分弹窗
 const clickScore = () =>{
+	if(currentInfo.value.userScore){
+		isScore.value = true
+		userScore.value = currentInfo.value.userScore;
+	}
 	scorePopup.value.open();
 }
 
 //点击关闭评分弹窗
 const clickScoreClose = () =>{
 	scorePopup.value.close();
+	userScore.value = 0;
+	isScore.value = false;
 }
 
 //确认评分
-const submitScore= () =>{
-	console.log("评分")
+const submitScore= async() =>{
+	uni.showLoading({
+		title:"加载中..."
+	})
+	let {classid,_id:wallId} = currentInfo.value;
+	let res = await apiGetSetupScore({
+		classid,
+		wallId,
+		userScore: userScore.value
+	})
+	uni.hideLoading();
+	if(res.data.errCode === 0){
+		uni.showToast({
+			title:"评分成功",
+			icon:"none"
+		})
+		classList.value[currentIndex.value].userScore = userScore.value;
+		uni.setStorageSync("storgClassList",classList.value);
+		clickScoreClose();
+	}
+	
 }
 
 //遮罩层状态
@@ -197,6 +283,7 @@ const goBackPage = () => {
 	
 	
 }
+
 </script>
 
 <style lang="scss" scoped>
