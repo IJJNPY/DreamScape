@@ -45,34 +45,34 @@
 					<view class="content">
 						<view class="row">
 							<view class="label">壁纸ID：</view>
-							<text selectable="true" class="value">165453416413135fad</text>
+							<text selectable="true" class="value">{{currentInfo._id}}</text>
 						</view>
-						<view class="row">
+						<!-- <view class="row">
 							<view class="label">分类：</view>
 							<text class="value">明星</text>
-						</view>
+						</view> -->
 						<view class="row">
 							<view class="label">发布者：</view>
-							<text class="value">大白菜</text>
+							<text class="value">{{currentInfo.nickname}}</text>
 						</view>
 						<view class="row">
 							<view class="label">评分：</view>
 							<text class="value rateBox">
 								<uni-rate readonly="true" touchable="true" value="3.5" size="16"/>
-								<text class="score">5分</text>
+								<text class="score">{{currentInfo.score}}分</text>
 							</text>
 						</view>
 						<view class="row">
 							<view class="label">摘要：</view>
 							<text class="value">
-								内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字，内容填充这是一段文字
+								{{currentInfo.description}}
 							</text>
 						</view>
 						<view class="row">
 							<view class="label">标签：</view>
 							<view class="value tabs">
-								<view class="tab" v-for="item in 2">
-									标签名
+								<view class="tab" v-for="item in currentInfo.tabs" :key="item">
+									{{item}}
 								</view>
 							</view>
 						</view>
@@ -118,6 +118,7 @@ const userScore = ref(0);
 const classList = ref([]);
 const currentId = ref(null);
 const currentIndex = ref(null);
+const currentInfo = ref(null);
 const readImgs = ref([]);
 
 const localClassList = uni.getStorageSync("localClassList") || [];
@@ -134,6 +135,7 @@ onLoad((e)=>{
 		return item._id == currentId.value
 	})
 	readImgsFun()
+	currentInfo.value = classList.value[currentIndex.value];
 })
 
 function readImgsFun(){
@@ -148,6 +150,8 @@ function readImgsFun(){
 const swiperChange = (e) =>{
 	currentIndex.value = e.detail.current;
 	readImgsFun()
+	currentInfo.value = classList.value[currentIndex.value];
+	console.log(currentInfo.value)
 }
 
 //点击Info弹窗
@@ -331,7 +335,7 @@ const goBackPage = () => {
 							border: 1px solid $brand-theme-color;
 							color: $brand-theme-color;
 							font-size: 22rpx;
-							padding: 10rpx 20rpx;
+							padding: 0rpx 20rpx;
 							border-radius: 40rpx;
 							list-height: 1em;
 							margin: 0 10rpx 10rpx 0;
