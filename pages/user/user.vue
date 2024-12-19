@@ -1,5 +1,5 @@
 <template>
-	<view class="userLayout pageBg">
+	<view class="userLayout pageBg" v-if="userinfo">
 		<view :style="{height:getNavBarHeight()+'px'}"></view>
 		<view class="userInfo" v-if="userInfo">
 			<view class="avatar">
@@ -87,7 +87,7 @@
 
 <script setup>
 import { getNavBarHeight } from '../../utils/system';
-import { apiuserInfo } from '@/api/apis.js';
+import { apiUserInfo } from '@/api/apis.js';
 
 const userInfo = ref({})
 
@@ -97,8 +97,8 @@ const clickContact = () =>{
 	})
 }
 
-const getuserInfo = () => {
-	apiuserInfo().then(res=>{
+const getUserInfo = () => {
+	apiUserInfo().then(res=>{
 		console.log(res);
 		userInfo.value = res.data;
 	})

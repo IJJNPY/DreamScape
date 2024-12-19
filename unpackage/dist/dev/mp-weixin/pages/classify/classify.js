@@ -15,6 +15,17 @@ const _sfc_main = {
   __name: "classify",
   setup(__props) {
     const classifyList = common_vendor.ref([]);
+    common_vendor.onShareAppMessage((e) => {
+      return {
+        title: "梦境壁纸，精选分类",
+        path: "/pages/classify/classify"
+      };
+    });
+    common_vendor.onShareTimeline(() => {
+      return {
+        title: "梦境壁纸，精选分类"
+      };
+    });
     const getClassify = async () => {
       let res = await api_apis.apiGetClassify({
         pageSize: 15
@@ -41,4 +52,5 @@ const _sfc_main = {
   }
 };
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-6bcfa975"]]);
+_sfc_main.__runtimeHooks = 6;
 wx.createPage(MiniProgramPage);

@@ -24,9 +24,10 @@ const _sfc_main = {
     const randomList = common_vendor.ref([]);
     const noticeList = common_vendor.ref([]);
     const classifyList = common_vendor.ref([]);
-    const goPreview = () => {
+    const goPreview = (id) => {
+      common_vendor.index.setStorageSync("storageClassList", randomList.value);
       common_vendor.index.navigateTo({
-        url: "/pages/preview/preview"
+        url: "/pages/preview/preview?id=" + id
       });
     };
     const getBanner = async () => {
@@ -47,6 +48,17 @@ const _sfc_main = {
       });
       classifyList.value = res.data.data;
     };
+    common_vendor.onShareAppMessage((e) => {
+      return {
+        title: "梦境壁纸，推荐页面",
+        path: "/pages/index/index"
+      };
+    });
+    common_vendor.onShareTimeline(() => {
+      return {
+        title: "梦境壁纸，推荐页面"
+      };
+    });
     getBanner();
     getDayRandom();
     getNotice();
@@ -69,7 +81,8 @@ const _sfc_main = {
         d: common_vendor.f(noticeList.value, (item, k0, i0) => {
           return {
             a: common_vendor.t(item.title),
-            b: item._id
+            b: "/pages/notice/detail?id=" + item._id,
+            c: item._id
           };
         }),
         e: common_vendor.p({
@@ -89,7 +102,7 @@ const _sfc_main = {
           return {
             a: item.smallPicurl,
             b: item._id,
-            c: common_vendor.o(goPreview, item._id)
+            c: common_vendor.o(($event) => goPreview(item._id), item._id)
           };
         }),
         i: common_vendor.f(classifyList.value, (item, k0, i0) => {
@@ -109,4 +122,5 @@ const _sfc_main = {
   }
 };
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-1cf27b2a"]]);
+_sfc_main.__runtimeHooks = 6;
 wx.createPage(MiniProgramPage);

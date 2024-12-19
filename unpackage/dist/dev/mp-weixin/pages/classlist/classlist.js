@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const api_apis = require("../../api/apis.js");
+const utils_common = require("../../utils/common.js");
 if (!Array) {
   const _easycom_uni_load_more2 = common_vendor.resolveComponent("uni-load-more");
   _easycom_uni_load_more2();
@@ -18,13 +19,37 @@ const _sfc_main = {
       pageNum: 1,
       pageSize: 12
     };
+    let pageName;
+    common_vendor.onShareAppMessage((e) => {
+      return {
+        title: "梦境壁纸-" + pageName,
+        path: "/pages/classlist/classlist?id=" + queryParams.classid + "&name=" + pageName
+      };
+    });
+    common_vendor.onShareTimeline(() => {
+      return {
+        title: "梦境壁纸-" + pageName,
+        query: "id=" + queryParams.classid + "&name=" + pageName
+      };
+    });
     common_vendor.onLoad((e) => {
-      let { id = null, name = null } = e;
-      queryParams.classid = id;
+      let { id = null, name = null, type = null } = e;
+      if (!id)
+        utils_common.gotoHome();
+      if (type) {
+        queryParams.type = type;
+      }
+      if (id) {
+        queryParams.classid = id;
+      }
+      pageName = name;
       common_vendor.index.setNavigationBarTitle({
         title: name
       });
       getClassList();
+    });
+    common_vendor.onUnload(() => {
+      common_vendor.index.removeStorageSync("storageClassList");
     });
     common_vendor.onReachBottom(() => {
       if (noMoreData.value)
@@ -33,12 +58,16 @@ const _sfc_main = {
       getClassList();
     });
     const getClassList = async () => {
-      let res = await api_apis.apiGetClassList(queryParams);
+      let res;
+      if (queryParams.classid)
+        res = await api_apis.apiGetClassList(queryParams);
+      if (queryParams.type)
+        res = await api_apis.apiGetHistoryList(queryParams);
       classList.value = [...classList.value, ...res.data.data];
       if (queryParams.pageSize > res.data.data) {
         noMoreData.value = true;
       }
-      common_vendor.index.setStorageSync("localClassList", classList.value);
+      common_vendor.index.setStorageSync("storageClassList", classList.value);
     };
     return (_ctx, _cache) => {
       return common_vendor.e({

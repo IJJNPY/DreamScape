@@ -28,8 +28,50 @@ function apiGetClassList(data) {
     data
   });
 }
+function apiGetSetupScore(data) {
+  return utils_request.request({
+    url: "/setupScore",
+    data
+  });
+}
+function apiWriteDownload(data) {
+  return utils_request.request({
+    url: "/downloadWall",
+    data
+  });
+}
+function apiDetailWall(data) {
+  return utils_request.request({
+    url: "/detailWall",
+    data
+  });
+}
+function apiGetHistoryList(data) {
+  return utils_request.request({
+    url: "/userWallList",
+    data
+  });
+}
+function apiNoticeDetail(data) {
+  return utils_request.request({
+    url: "/wallNewsDetail",
+    data
+  });
+}
+function apiSearchData(data) {
+  return utils_request.request({
+    url: "/searchWall",
+    data
+  });
+}
+exports.apiDetailWall = apiDetailWall;
 exports.apiGetBanner = apiGetBanner;
 exports.apiGetClassList = apiGetClassList;
 exports.apiGetClassify = apiGetClassify;
 exports.apiGetDayRandom = apiGetDayRandom;
+exports.apiGetHistoryList = apiGetHistoryList;
 exports.apiGetNotice = apiGetNotice;
+exports.apiGetSetupScore = apiGetSetupScore;
+exports.apiNoticeDetail = apiNoticeDetail;
+exports.apiSearchData = apiSearchData;
+exports.apiWriteDownload = apiWriteDownload;

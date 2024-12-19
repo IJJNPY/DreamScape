@@ -33,7 +33,7 @@ let pageName;
 //分享到好友
 onShareAppMessage((e)=>{
 	return {
-		title:"分享测试标题-"+pageName,
+		title:"梦境壁纸-"+pageName,
 		path:"/pages/classlist/classlist?id="+queryParams.classid+"&name="+pageName
 	}
 })
@@ -41,7 +41,7 @@ onShareAppMessage((e)=>{
 //分享到朋友圈
 onShareTimeline(()=>{
 	return{
-		title:"分享朋友圈---",
+		title:"梦境壁纸-"+pageName,
 		query:"id="+queryParams.classid+"&name="+pageName
 	}
 })
