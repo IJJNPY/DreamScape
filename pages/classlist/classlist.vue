@@ -63,6 +63,10 @@ onLoad((e)=>{
 	getClassList();
 })
 
+onUnload(()=>{
+	uni.removeStorageSync("storageClassList")
+})
+
 onReachBottom(()=>{
 	if(noMoreData.value) return;
 	queryParams.pageNum++;
@@ -79,7 +83,7 @@ const getClassList = async() =>{
 	if(queryParams.pageSize > res.data.data){
 		noMoreData.value = true;
 	}
-	uni.setStorageSync("localClassList",classList.value)
+	uni.setStorageSync("storageClassList",classList.value)
 }
 
 </script>

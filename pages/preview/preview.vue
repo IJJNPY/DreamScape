@@ -123,7 +123,7 @@ const currentInfo = ref({});
 const isScore = ref(false);
 const readImgs = ref([]);
 
-const localClassList = uni.getStorageSync("localClassList") || [];
+const localClassList = uni.getStorageSync("storageClassList") || [];
 
 //分享给好友
 onShareAppMessage((e)=>{
@@ -149,7 +149,7 @@ classList.value = localClassList.map(item=>{
 	}
 })
 
-onLoad((e)=>{
+onLoad(async(e)=>{
 	currentId.value = e.id;
 	if(e.type == 'share'){
 		let res = await apiDetailWall({id:currentId.value})
@@ -303,7 +303,7 @@ const submitScore= async() =>{
 			icon:"none"
 		})
 		classList.value[currentIndex.value].userScore = userScore.value;
-		uni.setStorageSync("storgClassList",classList.value);
+		uni.setStorageSync("storageClassList",classList.value);
 		clickScoreClose();
 	}
 	
@@ -330,9 +330,7 @@ const goBackPage = () => {
 	})
 }
 
-onUnload(()=>{
-	uni.removeStorageSync("localClassList")
-})
+
 
 </script>
 

@@ -41,7 +41,7 @@ onLoad((e)=>{
 
 const getNoticeDetail = ()=>{
 	apiNoticeDetail({id:noticeId}).then(res=>{
-		detail.value = res.data
+		detail.value = res.data.data
 		console.log(res);
 	})
 }

@@ -16,7 +16,7 @@
 			<view class="center">
 				<swiper vertical autoplay interval="1500" duration="500" circular="true">
 					<swiper-item v-for="item in noticeList" :key="item._id">
-						<navigator url="/pages/notice/detail?id="+item._id>
+						<navigator :url="'/pages/notice/detail?id='+item._id">
 							{{item.title}}
 						</navigator>
 					</swiper-item>
@@ -40,7 +40,8 @@
 			</common-title>
 			<view class="content">
 				<scroll-view scroll-x="true">
-					<view class="box" v-for="item in randomList" :key="item._id" @click="goPreview">
+					<view class="box" v-for="item in randomList" :key="item._id" 
+					@click="goPreview(item._id)">
 						<image :src="item.smallPicurl" mode="aspectFill"></image>
 					</view>
 				</scroll-view>
@@ -50,7 +51,7 @@
 			<common-title>
 				<template #name>专题精选</template>
 				<template #custom>
-					<navigator url="" class="more">MORE+</navigator>
+					<navigator url="/pages/classify/classify" class="more">MORE+</navigator>
 				</template>
 			</common-title>
 			<view class="content">
@@ -73,7 +74,7 @@ const classifyList = ref([]);
 
 //跳转到预览页面
 const goPreview = (id)=>{
-	uni.setStorageSync("storgClassList",randomList.value);
+	uni.setStorageSync("storageClassList",randomList.value);
 	uni.navigateTo({
 		url:"/pages/preview/preview?id="+id
 	})
