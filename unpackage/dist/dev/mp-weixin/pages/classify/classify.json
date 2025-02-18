@@ -1,9 +1,0 @@
-{
-  "navigationBarTitleText": "分类",
-  "navigationStyle": "custom",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "custom-nav-bar": "../../components/custom-nav-bar/custom-nav-bar",
-    "theme-item": "../../components/theme-item/theme-item"
-  }
-}

@@ -1,5 +1,5 @@
 <template>
-	<view class="notice">
+	<view class="">
 		
 	</view>
 </template>

@@ -5,7 +5,7 @@
 				:duration="duration" :show="showTrans" @click="onTap" />
 			<uni-transition key="2" :mode-class="ani" name="content" :styles="transClass" :duration="duration"
 				:show="showTrans" @click="onTap">
-				<view class="uni-popup__wrapper" :style="getStyles" :class="[popupstyle]" @click="clear">
+				<view class="uni-popup__wrapper" :style="{ backgroundColor: bg }" :class="[popupstyle]" @click="clear">
 					<slot />
 				</view>
 			</uni-transition>
@@ -39,7 +39,6 @@
 	 * @property {Boolean} isMaskClick = [true|false] 蒙版点击是否关闭弹窗
 	 * @property {String}  backgroundColor 主窗口背景色
 	 * @property {String}  maskBackgroundColor 蒙版颜色
-	 * @property {String}  borderRadius 设置圆角(左上、右上、右下和左下) 示例:"10px 10px 10px 10px"
 	 * @property {Boolean} safeArea		   是否适配底部安全区
 	 * @event {Function} change 打开关闭弹窗触发，e={show: false}
 	 * @event {Function} maskClick 点击遮罩触发
@@ -87,9 +86,6 @@
 				type: String,
 				default: 'rgba(0, 0, 0, 0.4)'
 			},
-			borderRadius:{
-				type: String,
-			}
 		},
 
 		watch: {
@@ -161,8 +157,6 @@
 					backgroundColor: 'rgba(0, 0, 0, 0.4)'
 				},
 				transClass: {
-					backgroundColor: 'transparent',
-					borderRadius: this.borderRadius || "0",
 					position: 'fixed',
 					left: 0,
 					right: 0
@@ -173,13 +167,6 @@
 			}
 		},
 		computed: {
-			getStyles() {
-				let res = { backgroundColor: this.bg };
-				if (this.borderRadius || "0") {
-					res = Object.assign(res, { borderRadius: this.borderRadius })
-				}
-				return res;
-			},
 			isDesktop() {
 				return this.popupWidth >= 500 && this.popupHeight >= 500
 			},
@@ -192,17 +179,6 @@
 		},
 		mounted() {
 			const fixSize = () => {
-				// #ifdef MP-WEIXIN
-				const {
-					windowWidth,
-					windowHeight,
-					windowTop,
-					safeArea,
-					screenHeight,
-					safeAreaInsets
-				} = uni.getWindowInfo()
-				// #endif
-				// #ifndef MP-WEIXIN
 				const {
 					windowWidth,
 					windowHeight,
@@ -211,7 +187,6 @@
 					screenHeight,
 					safeAreaInsets
 				} = uni.getSystemInfoSync()
-				// #endif
 				this.popupWidth = windowWidth
 				this.popupHeight = windowHeight + (windowTop || 0)
 				// TODO fix by mehaotian 是否适配底部安全区 ,目前微信ios 、和 app ios 计算有差异，需要框架修复
@@ -246,12 +221,6 @@
 			this.setH5Visible()
 		},
 		// #endif
-		activated() {
-   	  this.setH5Visible(!this.showPopup);
-    },
-    deactivated() {
-      this.setH5Visible(true);
-    },
 		created() {
 			// this.mkclick =  this.isMaskClick || this.maskClick
 			if (this.isMaskClick === null && this.maskClick === null) {
@@ -271,10 +240,10 @@
 			this.maskClass.backgroundColor = this.maskBackgroundColor
 		},
 		methods: {
-			setH5Visible(visible = true) {
+			setH5Visible() {
 				// #ifdef H5
 				// fix by mehaotian 处理 h5 滚动穿透的问题
-				document.getElementsByTagName('body')[0].style.overflow =  visible ? "visible" : "hidden";
+				document.getElementsByTagName('body')[0].style.overflow = 'visible'
 				// #endif
 			},
 			/**
@@ -354,15 +323,13 @@
 					position: 'fixed',
 					left: 0,
 					right: 0,
-					backgroundColor: this.bg,
-					borderRadius:this.borderRadius || "0"
+					backgroundColor: this.bg
 				}
 				// TODO 兼容 type 属性 ，后续会废弃
 				if (type) return
 				this.showPopup = true
 				this.showTrans = true
 				this.$nextTick(() => {
-					this.showPoptrans()
 					if (this.messageChild && this.type === 'message') {
 						this.messageChild.timerClose()
 					}
@@ -379,26 +346,20 @@
 					left: 0,
 					right: 0,
 					bottom: 0,
-					paddingBottom: this.safeAreaInsets + 'px',
-					backgroundColor: this.bg,
-					borderRadius:this.borderRadius || "0",
+					// paddingBottom: this.safeAreaInsets + 'px',
+					backgroundColor: this.bg
 				}
 				// TODO 兼容 type 属性 ，后续会废弃
 				if (type) return
-				this.showPoptrans()
+				this.showPopup = true
+				this.showTrans = true
 			},
 			/**
 			 * 中间弹出样式处理
 			 */
 			center(type) {
 				this.popupstyle = 'center'
-				//微信小程序下，组合动画会出现文字向上闪动问题，再此做特殊处理
-				// #ifdef MP-WEIXIN
-					this.ani = ['fade']
-				// #endif
-				// #ifndef MP-WEIXIN
-					this.ani = ['zoom-out', 'fade']
-				// #endif
+				this.ani = ['zoom-out', 'fade']
 				this.transClass = {
 					position: 'fixed',
 					/* #ifndef APP-NVUE */
@@ -410,12 +371,12 @@
 					right: 0,
 					top: 0,
 					justifyContent: 'center',
-					alignItems: 'center',
-					borderRadius:this.borderRadius || "0"
+					alignItems: 'center'
 				}
 				// TODO 兼容 type 属性 ，后续会废弃
 				if (type) return
-				this.showPoptrans()
+				this.showPopup = true
+				this.showTrans = true
 			},
 			left(type) {
 				this.popupstyle = 'left'
@@ -426,7 +387,6 @@
 					bottom: 0,
 					top: 0,
 					backgroundColor: this.bg,
-					borderRadius:this.borderRadius || "0",
 					/* #ifndef APP-NVUE */
 					display: 'flex',
 					flexDirection: 'column'
@@ -434,7 +394,8 @@
 				}
 				// TODO 兼容 type 属性 ，后续会废弃
 				if (type) return
-				this.showPoptrans()
+				this.showPopup = true
+				this.showTrans = true
 			},
 			right(type) {
 				this.popupstyle = 'right'
@@ -445,7 +406,6 @@
 					right: 0,
 					top: 0,
 					backgroundColor: this.bg,
-					borderRadius:this.borderRadius || "0",
 					/* #ifndef APP-NVUE */
 					display: 'flex',
 					flexDirection: 'column'
@@ -453,13 +413,8 @@
 				}
 				// TODO 兼容 type 属性 ，后续会废弃
 				if (type) return
-				this.showPoptrans()
-			},
-			showPoptrans(){
-				this.$nextTick(()=>{
-					this.showPopup = true
-					this.showTrans = true
-				})
+				this.showPopup = true
+				this.showTrans = true
 			}
 		}
 	}

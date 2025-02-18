@@ -2,7 +2,7 @@
 	<view class="noticeLayout">
 		<view class="title">
 			<view class="tag" v-if="detail.select">
-				<uni-tag inverted text="置顶" type="error" />
+				<uni-tag inverted text="推荐" type="error" />
 			</view>
 			<view class="font">{{detail.title}}</view>			
 		</view>
@@ -40,10 +40,22 @@ onLoad((e)=>{
 
 
 const getNoticeDetail = ()=>{
+	/* 获取详情 
 	apiNoticeDetail({id:noticeId}).then(res=>{
-		detail.value = res.data.data
+		detail.value = res.data
 		console.log(res);
 	})
+	*/
+   detail.value = {
+	   select:true,
+	   title:"这是公告的标题",
+	   author:"咸虾米",
+	   publish_date:1731481460710,
+	   content:"详情内容详情内容详情内容详情内容详情内容详情内容",
+	   view_count:911
+   }
+   
+	
 }
 
 

@@ -45,10 +45,11 @@
 		
 		<view v-else>
 			<view class="list">
-				<navigator :url="`/pages/preview/preview?id=${item._id}`"  class="item" 
+				<view  class="item" 
 				v-for="item in classList" :key="item._id">				
-					<image :src="item.smallPicurl" mode="aspectFill"></image>				
-				</navigator>
+					<picture-item :item="item" :classList="classList"></picture-item>			
+				</view>
+					
 			</view>		
 			<view class="loadingLayout" v-if="noData || classList.length">
 				<uni-load-more :status="noData?'noMore':'loading'"/>
@@ -68,6 +69,14 @@ const queryParams = ref({
 	pageNum:1,
 	pageSize:12,
 	keyword:""
+})
+
+
+onLoad((e)=>{
+	if(e.keyword){
+		queryParams.value.keyword = e.keyword;
+		onSearch();
+	}
 })
 
 //搜索历史词
@@ -128,7 +137,14 @@ const removeHistory = ()=>{
 const searchData = async ()=>{
 	try{
 		let res =  await apiSearchData(queryParams.value);
-		classList.value  =  [...classList.value,...res.data] ;
+		let data = [{
+			_id:"66e55e91816a3ffb2dccb589",
+			smallPicurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240914/1726307754431_8_small.webp"
+		},{
+			_id:"66022036337a9fefcc439617",
+			smallPicurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240326/1711415157399_4_small.webp"
+		}]
+		classList.value  =  [...classList.value,...data] ;
 		uni.setStorageSync("storgClassList",classList.value);	
 		if(queryParams.value.pageSize > res.data.length) noData.value = true;
 		if(res.data.length == 0 && classList.value.length==0) noSearch.value = true;

@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-	
+
 </script>
 
 <style lang="scss" scoped>
@@ -18,10 +18,9 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0 30rpx;
+	padding:0 30rpx;
 	.name{
-		font-size: 40rpx;
+		font-size: 40rpx
 	}
 }
-
 </style>

@@ -1,23 +1,29 @@
 <template>
 	<view class="themeItem">
-		<navigator :url="'/pages/classlist/classlist?id='+item._id+'&name='+item.name" class="box" v-if="!isMore">
-			<image class="pic" :src="item.picurl"></image>
+		<navigator 		
+		:url="'/pages/classlist/classlist?id='+item._id+'&name='+item.name" 
+		class="box" 
+		v-if="!isMore">
+			
+			<image class="pic" :src="getSmallImg(item.picurl,250)" mode="aspectFill"></image>
 			<view class="mask">{{item.name}}</view>
 			<view class="tab" v-if="compareTimestamp(item.updateTime)">{{compareTimestamp(item.updateTime)}}前更新</view>
 		</navigator>
 		
 		<navigator url="/pages/classify/classify" open-type="reLaunch" class="box more" v-if="isMore">
-			<image class="pic" src="../../common/images/more.jpg"></image>
+			<image class="pic" src="../../common/images/more.jpg" mode="aspectFill"></image>
 			<view class="mask">
 				<uni-icons type="more-filled" size="34" color="#fff"></uni-icons>
-				<view class="">更多</view>
-			</view>
-		</navigator> 
+				<view class="text">更多</view>
+			</view>			
+		</navigator>
 	</view>
 </template>
 
 <script setup>
 import {compareTimestamp} from "@/utils/common.js"
+import { getSmallImg } from "../../utils/tools";
+
 defineProps({
 	isMore:{
 		type:Boolean,
@@ -26,14 +32,16 @@ defineProps({
 	item:{
 		type:Object,
 		default(){
-			return{
+			return {
 				name:"默认名称",
 				picurl:"../../common/images/classify1.jpg",
-				updateTime:Date.now()-1000*60*60
+				updateTime:Date.now() - 1000*60*60*5
 			}
 		}
 	}
 })
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -41,35 +49,36 @@ defineProps({
 	.box{
 		height: 340rpx;
 		border-radius: 10rpx;
-		overflow: hidden;
+		overflow:hidden;
 		position: relative;
 		.pic{
-			height: 100%;
 			width: 100%;
+			height: 100%;
 		}
 		.mask{
 			width: 100%;
 			height: 70rpx;
 			position: absolute;
-			bottom: 0;
-			left: 0;
+			bottom:0;
+			left:0;
 			background: rgba(0,0,0,0.2);
-			color: #fff;
+			color:#fff;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			backdrop-filter: blur(20rpx);
-			font-weight: 60rpx;
+			font-weight: 600;
+			font-size: 30rpx;
 		}
 		.tab{
 			position: absolute;
-			left: 0;
-			top: 0;
+			left:0;
+			top:0;
 			background: rgba(250,129,90,0.7);
 			backdrop-filter: blur(20rpx);
-			color: #fff;
+			color:#fff;
 			font-size: 22rpx;
-			padding: 6rpx 14rpx;
+			padding:6rpx 14rpx;
 			border-radius: 0 0 20rpx 0;
 			transform: scale(0.8);
 			transform-origin: left top;
