@@ -1,12 +1,12 @@
 <template>
 	<view class="picture" @click="goPreview(item._id)">				
-		<image :src="item.picurl" mode="aspectFill"></image>		
+		<image :src="getSmallImg(item.picurl,280)" mode="aspectFill"></image>		
 	</view>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-
+import { getSmallImg } from '@/utils/tools.js'
 const props = defineProps({
 	item:{
 		type:Object

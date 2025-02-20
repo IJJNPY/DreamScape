@@ -31,6 +31,7 @@ import {gotoHome} from "@/utils/common.js"
 //分类列表数据
 const classList = ref([]);
 const noData = ref(false)
+const picCloudObj = uniCloud.importObject("client-wallpaper-piclist")
 
 //定义data参数
 const queryParams = {
@@ -65,14 +66,8 @@ onReachBottom(()=>{
 
 //获取分类列表网络数据
 const getClassList = async ()=>{
-	let data = [{
-		_id:"671c48fe7ad52ddc6cb14cab",
-		picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906765161_0_small.webp"
-	},{
-		_id:"671c48fe7ad52ddc6cb14ca7",
-		picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906749210_1_small.webp"
-	}];
-		
+	let {data,errCode,errMsg} = await picCloudObj.list(queryParams);
+	console.log(data);
 	classList.value = [...classList.value , ...data];
 	if(queryParams.pageSize > data.length) noData.value = true;	
 }

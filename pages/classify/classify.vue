@@ -35,6 +35,7 @@ const queryParams = ref({
 const getClassify =async()=>{
 	
 	let {errCode,errMsg,data,count,...rest} = await classCloudObj.list(queryParams.value);
+	console.log(data);
 	if(errCode!==0) return showToast({title:errMsg})
 	classifyList.value = [...classifyList.value,...data];	
 	if(queryParams.value.pageSize > data.length) noData.value = true;

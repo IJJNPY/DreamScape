@@ -55,12 +55,12 @@
 							<view class="label">壁纸ID：</view>
 							<text selectable class="value">{{currentInfo._id}}</text>
 						</view>
-						<!-- 
+						
 						<view class="row">
 							<view class="label">分类：</view>
-							<text class="value class">明星美女</text>
+							<text class="value class">{{currentInfo.classname}}</text>
 						</view>
-						 -->
+						
 						<view class="row">
 							<view class="label">发布者：</view>
 							<text class="value">{{currentInfo.nickname}}</text>
@@ -81,12 +81,19 @@
 							</view>
 						</view>
 
-						<view class="row">
+						<view class="row" v-if="currentInfo.tabs.length">
 							<text class="label">标签：</text>
 							<view class='value tabs'>
 								<view class="tab" v-for="tab in currentInfo.tabs" :key="tab" @click="goSearch(tab)">
 									{{tab}}
 								</view>
+							</view>
+						</view>
+						
+						<view class="row">
+							<text class="label">查看量：</text>
+							<view class='value viewCount'>
+								{{currentInfo.view_count}}
 							</view>
 						</view>
 
@@ -138,6 +145,7 @@
 		getStatusBarHeight
 	} from "@/utils/system.js"
 	
+	const picCloudObj = uniCloud.importObject("client-wallpaper-piclist",{customUI:true})
 	const maskState = ref(true);
 	const infoPopup = ref(null);
 	const scorePopup = ref(null);
@@ -163,11 +171,8 @@
 		
 		
 		if(e.type == 'share'){
-			let data = [{
-				_id:"66e55e91816a3ffb2dccb589",
-				picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240914/1726307754431_8_small.webp"
-			}]
-			classList.value = data
+			let {data,errCode,errMsg} = await picCloudObj.item(currentId.value)
+			classList.value = [data]
 		}
 		currentIndex.value = classList.value.findIndex(item => item._id == currentId.value)
 		currentInfo.value = classList.value[currentIndex.value]
@@ -390,6 +395,9 @@ onUnload(()=>{
 
 
 function readImgsFun() {
+	
+	picCloudObj.addRead(currentInfo.value._id)
+	
 	readImgs.value.push(
 		currentIndex.value <= 0 ? classList.value.length - 1 : currentIndex.value - 1,
 		currentIndex.value,
@@ -563,6 +571,11 @@ function readImgsFun() {
 
 						.class {
 							color: $brand-theme-color;
+						}
+						
+						.viewCount{
+							color: $text-font-color-2;
+							font-size: 26rpx;
 						}
 
 
