@@ -63,7 +63,7 @@
 <script setup>
 import {ref} from "vue";
 import {onLoad,onUnload,onReachBottom} from "@dcloudio/uni-app";
-import {apiSearchData} from "@/api/apis.js"
+import { showToast } from "../../utils/common";
 //查询参数
 const queryParams = ref({	
 	pageNum:1,
@@ -92,6 +92,8 @@ const noSearch = ref(false);
 
 //搜索结果列表
 const classList = ref([]);
+
+const picCloudObj = uniCloud.importObject("client-wallpaper-piclist");
 
 
 //点击搜索
@@ -136,19 +138,12 @@ const removeHistory = ()=>{
 
 const searchData = async ()=>{
 	try{
-		let res =  await apiSearchData(queryParams.value);
-		let data = [{
-			_id:"66e55e91816a3ffb2dccb589",
-			smallPicurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240914/1726307754431_8_small.webp"
-		},{
-			_id:"66022036337a9fefcc439617",
-			smallPicurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240326/1711415157399_4_small.webp"
-		}]
+		let {errCode,errMsg,data} = await picCloudObj.search(queryParams.value);
+		if(errCode!==0) return showToast({title:errMsg});
 		classList.value  =  [...classList.value,...data] ;
 		uni.setStorageSync("storgClassList",classList.value);	
-		if(queryParams.value.pageSize > res.data.length) noData.value = true;
-		if(res.data.length == 0 && classList.value.length==0) noSearch.value = true;
-		console.log(res);
+		if(queryParams.value.pageSize > data.length) noData.value = true;
+		if(data.length == 0 && classList.value.length==0) noSearch.value = true;
 	}finally{
 		uni.hideLoading()
 	}

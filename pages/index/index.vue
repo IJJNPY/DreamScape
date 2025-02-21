@@ -108,10 +108,10 @@ const getBanner = async ()=>{
 const getDayRandom = async ()=>{	
 	randomList.value = [{
 		_id:"671c48fe7ad52ddc6cb14cab",
-		picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906765161_0_small.webp"
+		// picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906765161_0_small.webp"
 	},{
 		_id:"671c48fe7ad52ddc6cb14ca7",
-		picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906749210_1_small.webp"
+		// picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906749210_1_small.webp"
 	},{
 		_id:"66e55e91816a3ffb2dccb589",
 		picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240914/1726307754431_8_small.webp"
