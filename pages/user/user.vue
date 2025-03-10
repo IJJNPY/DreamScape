@@ -1,28 +1,33 @@
 <template>
 	<view class="userLayout pageBg" v-if="userInfo || record">
 		<view :style="{height:getNavBarHeight()+'px'}"></view>
-		<view class="userInfo" v-if="userInfo">
-			<view class="box">
+		<view class="userInfo">
+			<view class="box" @click="handleUserInfo">
+				
 				<view class="avatar">
-					<image src="https://cdn.qingnian8.com/project/bizhi/defAvatar.png" mode="aspectFill"></image>
+					<uni-id-pages-avatar 
+					v-if="userInfo.avatar_file && userInfo.avatar_file.url" 
+					width="102%" height="102%" style="pointer-events: none;"></uni-id-pages-avatar>
+					<image v-else 
+					src="https://cdn.qingnian8.com/project/bizhi/defAvatar.png" mode="aspectFill"></image>
 				</view>
-				<view class="name">{{userInfo.nickname}}</view>
+				<view class="name">{{userInfo.nickname || '未登录'}}</view>
 			</view>
 			<text class="other" selectable>	
-				硬币：0
+				硬币：{{coinStore.total}}
 			</text>
 		</view>
 		
-		<view class="section grid">
+		<view class="section grid" v-if="config.checkedAd">
 			<view @click="dayCoin" class="item" hover-class="hoverItem" hover-stay-time="0" hover-start-time="0">
 				<uni-icons type="calendar" size="22"></uni-icons>
 				<view class="title">每日领币</view>
-				<view class="des">+10 / 日</view>
+				<view class="des">+{{config.dayCoin}} / 日</view>
 			</view>
 			<view @click="adCoin" class="item" hover-class="hoverItem" hover-stay-time="0" hover-start-time="0">
 				<uni-icons type="videocam" size="25"></uni-icons>
 				<view class="title">看广告得币</view>
-				<view class="des">+30 / 次</view>
+				<view class="des">+{{config.adCoin}} / 次</view>
 			</view>
 			<view @click="ruleCoin" class="item" hover-class="hoverItem" hover-stay-time="0" hover-start-time="0">
 				<uni-icons type="info" size="23"></uni-icons>
@@ -34,7 +39,7 @@
 		<view class="section">
 			<view class="list">
 				<view 				
-				@click="routerTo('/pages/classlist/classlist?name=我的下载&type=download')"
+				@click="downloadPage"
 				hover-class="hoverRow"
 				hover-stay-time="0"
 				hover-start-time="0"
@@ -44,13 +49,13 @@
 						<view class="text">我的下载</view>
 					</view>
 					<view class="right">
-						<view class="text">{{record.downloadSize}}</view>
+						<view class="text" v-if="record.downloadSize">{{record.downloadSize}}</view>
 						<uni-icons type="right" size="15" color="#aaa"></uni-icons>
 					</view>
 				</view>
 				
 				<view  				
-				@click="routerTo('/pages/classlist/classlist?name=我的评分&type=score')"
+				@click="scorePage"
 				hover-class="hoverRow"
 				hover-stay-time="0"
 				hover-start-time="0"
@@ -60,7 +65,7 @@
 						<view class="text">我的评分</view>
 					</view>
 					<view class="right">
-						<view class="text">{{record.scoreSize}}</view>
+						<view class="text" v-if="record.scoreSize">{{record.scoreSize}}</view>
 						<uni-icons type="right" size="15" color="#aaa"></uni-icons>
 					</view>
 				</view>
@@ -93,7 +98,7 @@
 		<view class="section">
 			<view class="list">
 				<view				
-				@click="routerTo('/pages/notice/detail?id=653507c6466d417a3718e94b')"
+				@click="routerTo('/pages/notice/detail?id=xxm-notice-dygx&name=订阅更新')"
 				hover-class="hoverRow"
 				hover-stay-time="0"
 				hover-start-time="0"
@@ -109,7 +114,7 @@
 				</view>
 				
 				<view 				
-				@click="routerTo('/pages/notice/detail?id=6536358ce0ec19c8d67fbe82')"
+				@click="routerTo('/pages/notice/detail?id=xxm-notice-cjwt&name=常见问题')"
 				hover-class="hoverRow"
 				hover-stay-time="0"
 				hover-start-time="0"
@@ -127,7 +132,7 @@
 		</view>
 		
 		
-		<view class="section" v-if="false">
+		<view class="section" v-if="hasLogin">
 			<view class="list">
 				<view					
 				hover-class="hoverRow"
@@ -143,8 +148,14 @@
 						<view class="text">退出当前账号</view>						
 					</view>
 				</view>
-			</view>			
+			</view>					
 		</view>
+		
+		<!-- #ifdef MP-WEIXIN -->
+		<view class="section" v-if="systemStore.config.cardVideo">
+			<ad-custom :unit-id="systemStore.config.cardVideo"></ad-custom>
+		</view>
+		<!-- #endif -->
 		
 	</view>
 	
@@ -158,11 +169,7 @@
 		<view class="rulePop">
 			<view class="title">硬币规则说明</view>
 			<text class="desc" decode>
-				1.硬币为咸虾米壁纸虚拟币仅用于下载使用，不可交易及提现；\n
-				2.每日可以获得10硬币；\n
-				3.看广告并且完播后可获得30硬币；\n
-				4.下载一次将消耗10硬币；\n
-				5.每日凌晨硬币将会清空初始化；
+				{{config.ruleCoin}}
 			</text>
 			<view class="confirm" @click="ruleClose">确认</view>
 		</view>
@@ -173,11 +180,56 @@
 <script setup>
 import {getNavBarHeight} from "@/utils/system.js"
 import {apiUserInfo} from "@/api/apis.js"
-import { ref } from "vue";
-import {routerTo, showModal} from "@/utils/common.js"
-const userInfo = ref(null)
+import { computed, ref } from "vue";
+import {onLoad} from "@dcloudio/uni-app"
+import {routerTo, showModal,getPageAndParams, gotoLogin, showToast} from "@/utils/common.js"
+import {
+    store,
+    mutations
+} from '@/uni_modules/uni-id-pages/common/store.js'
+import pagesJson from '@/pages.json'
+import {useSystemStore} from "@/stores/system.js"
+import {useCoinStore} from "@/stores/coin.js"
+import { watch } from "vue";
+const systemStore = useSystemStore();
+const coinStore = useCoinStore();
+const config = computed(()=>systemStore.config)
+const actionCloudObj = uniCloud.importObject("client-user-action",{customUI:true});
+
+const userInfo = computed(()=>store.userInfo);
+const hasLogin = computed(()=>store.hasLogin);
 const record = ref({downloadSize:0,scoreSize:0});
 const rulePopRef = ref(null);
+
+let videoAd = null
+
+onLoad(()=>{
+	
+})
+
+watch(()=>config.value.rewardedVideo,(nv)=>{
+	if(!config.value.rewardedVideo) return;
+	if (wx.createRewardedVideoAd) {
+	  videoAd = wx.createRewardedVideoAd({
+	    adUnitId: config.value.rewardedVideo
+	  })
+	  videoAd.onLoad(() => {})
+	  videoAd.onError((err) => {
+	    console.error('激励视频广告加载失败', err)
+		showToast({title:"请稍后重试"})
+	  })
+	  videoAd.onClose((res) => {
+		  if(res.isEnded){
+			   coinStore.getAdCoin();
+		  }else{
+			  showToast({title:"广告未完播，无法获得奖励"})
+		  }
+		 
+	  })
+	}
+},{immediate:true})
+
+
 
 const clickContact = ()=>{
 	uni.makePhoneCall({
@@ -185,31 +237,57 @@ const clickContact = ()=>{
 	})
 }
 
-const getUserInfo = ()=>{
-	userInfo.value = {
-		_id:"xxx1mmm3ddd8yyy",
-		nickname:"咸虾米xxm",
-		avatar:"../../static/images/xxmLogo.png"
-	}
+const getCoin = ()=>{
+	if(!hasLogin.value) return;
+	coinStore.getCoinCount();
 }
 
-const getRecord = ()=>{
-	record.value = {
-		downloadSize:2,
-		scoreSize:1
-	}
+const getRecord = async()=>{
+	if(!hasLogin.value) return;
+	let res = await  actionCloudObj.userHistoryCount();	
+	record.value = res
 }
 
 
 //每日领币
-const dayCoin = ()=>{
+const dayCoin = async()=>{
 	console.log("每日领币");
+	if(!gotoLogin()) return;
+	try{
+		uni.showLoading()
+		let {errCode} = await actionCloudObj.giveDayCoin();
+		if(errCode!==0) return showToast({title:"请重试"})
+		showToast({title:"领取成功"});
+		getCoin();		
+	}catch(err){
+		showToast({title:err.errMsg})
+	}
+	
 }
+
+
+
 
 //看广告获得硬币
 const adCoin = ()=>{
+	if(!gotoLogin()) return;
+	if( uni.getSystemInfoSync().uniPlatform !=='mp-weixin') return showToast({title:"只支持微信小程序"})
 	console.log("看广告获得硬币");
+	if (videoAd) {
+	  videoAd.show().catch(() => {
+	    // 失败重试
+	    videoAd.load()
+	      .then(() => videoAd.show())
+	      .catch(err => {
+	        console.error('激励视频 广告显示失败', err)
+			showToast({title:"加载失败，请刷新重试"})
+	      })
+	  })
+	}	
 }
+
+
+
 
 //硬币规则说明
 const ruleCoin = ()=>{
@@ -222,13 +300,47 @@ const ruleClose = ()=>{
 }
 
 //退出登录
-const logout = ()=>{
+const logout = async()=>{
+	let feedback = await showModal({content:"是否确认退出登录"})
+	if(feedback == 'confirm') mutations.logout();
+	init();
+}
+
+//登录或者个人中心
+const handleUserInfo = ()=>{
+	if(hasLogin.value){
+		routerTo(`/uni_modules/uni-id-pages/pages/userinfo/userinfo`)
+	}else{
+		routerTo(`/${pagesJson.uniIdRouter.loginPage}?uniIdRedirectUrl=${getPageAndParams()}`)
+	}
 	
 }
 
+const downloadPage = ()=>{
+	if(!gotoLogin()) return;
+	routerTo('/pages/classlist/classlist?name=我的下载&type=download')
+}
+const scorePage = ()=>{
+	if(!gotoLogin()) return;
+	routerTo('/pages/classlist/classlist?name=我的评分&type=score')
+}
+
+
+
+
+const init = ()=>{
+	record.value = {downloadSize:0,scoreSize:0};
+	coinStore.total = 0
+}
+//监听登录成功
+uni.$on('uni-id-pages-login-success',()=>{
+	getRecord();
+	getCoin();
+})
 
 getRecord();
-getUserInfo();
+getCoin();
+
 </script>
 
 <style lang="scss" scoped>

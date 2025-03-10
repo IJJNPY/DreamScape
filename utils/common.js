@@ -1,3 +1,9 @@
+import {
+    store,
+    mutations
+} from '@/uni_modules/uni-id-pages/common/store.js'
+import pagesJson from '@/pages.json'
+
 export function compareTimestamp(timestamp) {
   const currentTime = new Date().getTime();
   const timeDiff = currentTime - timestamp;
@@ -90,10 +96,34 @@ export function showToast({title="",duration=1500,icon="none",mask=false}={}){
 }
 
 //获取当前页面地址和参数
-export const getPageAndParams = ()=>{
-	let {path,query={}} = uni.getLaunchOptionsSync();	
-	const queryParams = new URLSearchParams(query);	
-	const result = `/${path}?${queryParams.toString()}`;
+export const getPageAndParams = () => {
+    // let { path, query = {} } = uni.getLaunchOptionsSync();	
+    let { route:path,options:query = {} } = getCurrentPages()[getCurrentPages().length - 1]
+    // 用于存储拼接后的查询参数字符串
+    return formatPageUrl(path,query);
+};
+
+export const formatPageUrl = (path,query)=>{
+	let queryString = "";
+	// 将对象形式的查询参数转换为字符串形式
+	for (let key in query) {
+	    if (query.hasOwnProperty(key)) {
+	        if (queryString) {
+	            queryString += "&";
+	        }
+	        queryString += `${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`;
+	    }
+	}
+	const result = `/${path}?${queryString}`;
 	return encodeURIComponent(result);
 }
 
+
+
+
+
+export const  gotoLogin = ()=>{
+	if(store.hasLogin) return true;
+	routerTo(`/${pagesJson.uniIdRouter.loginPage}?uniIdRedirectUrl=${getPageAndParams()}`)
+	return false
+}
