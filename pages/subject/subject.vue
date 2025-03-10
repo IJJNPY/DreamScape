@@ -9,8 +9,8 @@
 			@click="routerTo(`/pages/subject/detail?name=${item.theme}&id=${item._id}`)">
 				<view class="pic">
 					<view class="group">
-						<view class="box" v-for='row in item.picList'>
-							<image :src="row.picurl" mode="aspectFill"></image>
+						<view class="box" v-for='row in item.picList.slice(0,5)'>
+							<image :src="getSmallImg(row.picurl,130)" mode="aspectFill"></image>
 						</view>
 					</view>
 					<view class="count">
@@ -42,8 +42,10 @@
 
 <script setup>
 import {ref} from "vue";	
+import {getSmallImg} from "@/utils/tools.js"
 import { onLoad,onShareAppMessage,onShareTimeline,onReachBottom } from "@dcloudio/uni-app"
-import { routerTo } from "../../utils/common";
+import { routerTo, showToast } from "../../utils/common";
+const dayCloudObj = uniCloud.importObject("client-activity-everyday")
 const dataList = ref([]);
 const queryParams = ref({	
 	pageNum:1,
@@ -53,9 +55,9 @@ const noData = ref(false);
 
 //获取专题列表
 const getDayList = async ()=>{
-	try{		
-		let data = [{_id:"xxxxx",theme:"美女专题",day:"2024-11-12",size:15,view_count:123,picList:[{_id:"n8jgh72qc1",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906765161_0_small.webp"},{_id:"5xpd5tqmpf3",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906749210_1_small.webp"},{_id:"a28bu9bah3a",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240906/1725589938397_1_small.webp"},{_id:"6tf4lzsubjq",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240622/1719022883133_1_small.webp"},{_id:"0nb4d0hog10q",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240327/1711530698069_5_small.webp"}]},{_id:"yyyyyyy",theme:"可爱猫猫专题",day:"2024-11-12",size:21,view_count:598,picList:[{_id:"amy7gvbvd0i",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240905/1725543485532_0_small.webp"},{_id:"k226eo94hhb",picurl:"https://mp-0cb878b7-99ec-44ea-8246-12b123304b05.cdn.bspapp.com/xxmBizhi/20240223/1708671856094_0_small.webp"},{_id:"jfj4l49uuoh",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241112/1731375749717_0_small.webp"},{_id:"f2gxty2nle",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240905/1725543482427_0_small.webp"},{_id:"o4g1w1r66t",picurl:"https://mp-0cb878b7-99ec-44ea-8246-12b123304b05.cdn.bspapp.com/xxmBizhi/20240223/1708671856384_7_small.webp"}]}];
-		
+	try{	
+		let {data,errCode} = await dayCloudObj.list(queryParams.value)
+		if(errCode!==0) return showToast({title:"查询有误"})
 		dataList.value = [...dataList.value,...data];
 		if(queryParams.value.pageSize > data.length) noData.value = true;		
 		console.log(data);

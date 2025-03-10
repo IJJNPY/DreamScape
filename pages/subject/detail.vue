@@ -1,6 +1,6 @@
 <template>
-	<view class="listLayout">
-		<view class="head" style="background-image: url(https://cdn.qingnian8.com/public/xxmBizhi/20240905/1725543485532_0_small.webp);">
+	<view class="listLayout" v-if="Object.keys(detail).length">
+		<view class="head" :style="`background-image: url(${detail.picList[0].picurl});`">
 			
 			<view class="inner" :style="{paddingTop:getStatusBarHeight()+'px'}">
 				<view :style="{height:getTitleBarHeight()+'px'}" class="backOut">
@@ -12,8 +12,8 @@
 					{{detail.theme}}
 				</view>								
 				<view class="day">{{detail.day}}推荐</view>								
-				<view class="description" v-if="true">
-					这里是详细的描述信息，可以有也可以隐藏，此处为内容填充部分
+				<view class="description" v-if="detail.description">
+					{{detail.description}}
 				</view>				
 			</view>				
 				
@@ -21,7 +21,7 @@
 		
 		
 		<view class="content">
-			<view class="size">共15张，3999人看过</view>
+			<view class="size">共{{detail.picList.length}}张，{{detail.view_count}}人看过</view>
 			<view class="list">
 				<view class="item"
 				v-for="item in detail.picList"
@@ -37,13 +37,21 @@
 		
 		
 	</view>
+	
+	
+	<view v-else class="loadingLayout" style="padding-top:200rpx">
+		<uni-load-more status="loading"></uni-load-more>
+	</view>
+	
+	
 </template>
 
 <script setup>
 import { computed ,ref} from "vue";
 import {getStatusBarHeight,getTitleBarHeight,getNavBarHeight} from "@/utils/system.js"
 import {onLoad,onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
-
+import { showToast } from "../../utils/common";
+const dayCloudObj = uniCloud.importObject("client-activity-everyday",{customUI:true})
 
 //分类列表数据
 const detail = ref({});
@@ -63,8 +71,11 @@ onLoad((e)=>{
 
 //获取分类列表网络数据
 const getDetail = async ()=>{	
-	let data = {_id:"xxxxx",theme:"AI美女专题",day:"2024-11-12",size:15,view_count:123,picList:[{_id:"n8jgh72qc1",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906765161_0_small.webp"},{_id:"5xpd5tqmpf3",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20241026/1729906749210_1_small.webp"},{_id:"a28bu9bah3a",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240906/1725589938397_1_small.webp"},{_id:"6tf4lzsubjq",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240622/1719022883133_1_small.webp"},{_id:"0nb4d0hog10q",picurl:"https://cdn.qingnian8.com/public/xxmBizhi/20240327/1711530698069_5_small.webp"}]}		
+	let {data,errCode} = await dayCloudObj.item(id)
+	if(errCode!==0) return showToast({title:"查询有误"})
 	detail.value = data;	
+	console.log(data);
+	
 }
 
 
